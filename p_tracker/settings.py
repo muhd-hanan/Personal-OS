@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nq9f80os3b)32r8#andbhnumu1_247svae3jdqw=)!uasl(&x-'
+SECRET_KEY = os.environ.get("SECRET_KEY", 'django-insecure-nq9f80os3b)32r8#andbhnumu1_247svae3jdqw=)!uasl(&x-')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True").lower() in ("true", "1")
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 
 # Application definition
@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'p_tracker.wsgi.application'
 
 DATABASES = {
     "default": dj_database_url.config(
-        default="postgresql://neondb_owner:npg_AJwWYK63DUBS@ep-odd-lab-aij0idic.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require"
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
     )
 }
 

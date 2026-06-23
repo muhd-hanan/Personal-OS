@@ -1,4 +1,9 @@
 import json
+import time
+from datetime import date, datetime, time as dt_time, timedelta
+from decimal import Decimal
+from collections import defaultdict
+
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -6,10 +11,6 @@ from django.views.decorators.http import require_POST
 from .models import Tracker, Entry, Note, DiaryEntry, TodoTask, Reminder, HabitCategory, Habit, HabitProgress
 
 def index(request):
-    import time
-    from datetime import date, timedelta
-    from decimal import Decimal
-    from collections import defaultdict
 
     # Ensure default trackers exist if database is fresh
     if not Tracker.objects.exists():
@@ -57,9 +58,9 @@ def index(request):
     chart_income_data  = [monthly_incomes.get(m, 0)  for m in chart_months]
     chart_labels       = [m.split()[0] for m in chart_months]  # Short month name
 
-    # Package trackers and their entries for frontend filtering
+    # Package trackers and their entries for frontend filtering (optimized with prefetch_related)
     trackers_dict = {}
-    for t in Tracker.objects.all():
+    for t in Tracker.objects.prefetch_related('entries'):
         entries_list = []
         for e in t.entries.all():
             entries_list.append({
@@ -135,7 +136,6 @@ def index(request):
     completed_todos = TodoTask.objects.filter(completed=True).count()
 
     # ── UPCOMING REMINDERS ──────────────────────────────────────────────────
-    from datetime import datetime, date
     now_dt = datetime.now()
     reminders_qs = Reminder.objects.all()
     reminders_list = []
@@ -206,9 +206,9 @@ def expense(request):
         Tracker.objects.create(tracker_id='business', name='Business')
         Tracker.objects.create(tracker_id='family', name='Family')
     
-    # Package all trackers and their entries for the template
+    # Package all trackers and their entries for the template (optimized with prefetch_related)
     trackers_dict = {}
-    for t in Tracker.objects.all():
+    for t in Tracker.objects.prefetch_related('entries'):
         entries_list = []
         for e in t.entries.all():
             entries_list.append({
@@ -281,7 +281,6 @@ def create_tracker(request):
             return JsonResponse({'status': 'error', 'message': 'Tracker name is required'}, status=400)
         
         # Generate ID similar to frontend format tracker_<timestamp>
-        import time
         tracker_id = f"tracker_{int(time.time() * 1000)}"
         
         tracker = Tracker.objects.create(
@@ -324,7 +323,6 @@ def save_entry(request):
         
         # If entry_id is not provided, generate one
         if not entry_id:
-            import time
             entry_id = f"entry_{int(time.time() * 1000)}"
             
         entry, created = Entry.objects.update_or_create(
@@ -442,7 +440,6 @@ def save_notes(request):
 def diary(request):
     # Ensure default entries exist if database is fresh
     if not DiaryEntry.objects.exists():
-        from datetime import date, timedelta
         today_date = date.today()
         yesterday_date = today_date - timedelta(days=1)
         
@@ -491,7 +488,6 @@ def save_diary(request):
 
         # 2. Update or create incoming entries
         for date_str, entry_data in data.items():
-            from datetime import datetime
             parsed_date = datetime.strptime(date_str, "%Y-%m-%d").date()
             
             DiaryEntry.objects.update_or_create(
@@ -513,7 +509,6 @@ def save_diary(request):
 def todo(request):
     # Ensure default entries exist if database is fresh
     if not TodoTask.objects.exists():
-        import time
         now_ms = int(time.time() * 1000)
         TodoTask.objects.create(
             task_id=str(now_ms),
@@ -581,7 +576,6 @@ def save_todos(request):
         
         # Update or create incoming tasks
         for t_data in data:
-            from datetime import datetime
             due_date_str = t_data.get('dueDate')
             due_date = None
             if due_date_str:
@@ -614,7 +608,7 @@ def login_view(request):
     error = None
     if request.method == 'POST':
         password = request.POST.get('password')
-        if password == '12344321':
+        if password == '62426':
             request.session['is_logged_in'] = True
             return redirect('/')
         else:
@@ -630,8 +624,6 @@ def logout_view(request):
 def reminder(request):
     # Pre-populate some reminders if database is empty
     if not Reminder.objects.exists():
-        import time
-        from datetime import date, time as dt_time
         now_ms = int(time.time() * 1000)
         Reminder.objects.create(
             reminder_id=str(now_ms),
@@ -668,7 +660,6 @@ def save_reminders(request):
         Reminder.objects.exclude(reminder_id__in=incoming_ids).delete()
         
         # Update or create incoming reminders
-        from datetime import datetime
         for r_data in data:
             date_val = datetime.strptime(r_data['date'], "%Y-%m-%d").date()
             time_str = r_data['time']
@@ -705,8 +696,6 @@ def task(request):
 
     # 2. Pre-populate default habits if database is fresh
     if not Habit.objects.exists():
-        import time
-        from datetime import date
         today_str = date.today().strftime('%Y-%m-%d')
         now_ms = int(time.time() * 1000)
         Habit.objects.create(habit_id=f"habit_{now_ms}", title="30-Minute Workout", category="Health", created_at=today_str)
@@ -734,7 +723,6 @@ def task(request):
         })
 
     # 5. Load progress history from DB
-    from collections import defaultdict
     history_dict = defaultdict(list)
     for p in HabitProgress.objects.all():
         history_dict[p.date].append(p.habit_id)
