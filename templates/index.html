@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal OS-Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+        :root {
+            --glass-blur: 20px;
+            --glass-saturate: 180%;
+        }
+
+        .tail-container {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Animated background glowing blobs */
+        .glass-bg-blobs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.45;
+            mix-blend-mode: plus-lighter;
+            animation: float 25s infinite alternate ease-in-out;
+            transition: all 0.8s ease-in-out;
+        }
+
+        /* Dark mode blobs: vibrant cyan, violet, indigo */
+        body:not(.light-mode) .blob-1 {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
+            width: 600px;
+            height: 600px;
+            top: -10%;
+            left: 10%;
+            animation-duration: 20s;
+        }
+
+        body:not(.light-mode) .blob-2 {
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0) 70%);
+            width: 700px;
+            height: 700px;
+            bottom: -10%;
+            right: 15%;
+            animation-duration: 28s;
+            animation-delay: -5s;
+        }
+
+        body:not(.light-mode) .blob-3 {
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, rgba(14, 165, 233, 0) 70%);
+            width: 550px;
+            height: 550px;
+            top: 40%;
+            left: 50%;
+            animation-duration: 24s;
+            animation-delay: -10s;
+        }
+
+        /* Light mode blobs: soft pastel blue, pink, peach */
+        body.light-mode .blob-1 {
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0) 70%);
+            width: 700px;
+            height: 700px;
+            top: -5%;
+            left: 5%;
+            animation-duration: 22s;
+        }
+
+        body.light-mode .blob-2 {
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0) 70%);
+            width: 800px;
+            height: 800px;
+            bottom: -5%;
+            right: 10%;
+            animation-duration: 32s;
+            animation-delay: -4s;
+        }
+
+        body.light-mode .blob-3 {
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0) 70%);
+            width: 600px;
+            height: 600px;
+            top: 35%;
+            left: 45%;
+            animation-duration: 26s;
+            animation-delay: -8s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0px, 0px) scale(1) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(40px, -60px) scale(1.1) rotate(120deg);
+            }
+
+            66% {
+                transform: translate(-30px, 40px) scale(0.95) rotate(240deg);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1) rotate(360deg);
+            }
+        }
+
+        /* ── DARK THEME GLASS ── */
+        body:not(.light-mode) {
+            background: radial-gradient(circle at 50% 50%, #080b16 0%, #02040a 100%) !important;
+            color: #f3f4f6 !important;
+        }
+
+        body:not(.light-mode) .bg-slate-950 {
+            background-color: transparent !important;
+        }
+
+        body:not(.light-mode) .bg-slate-900 {
+            background: rgba(10, 15, 30, 0.5) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) header.bg-slate-900 {
+            background: rgba(10, 15, 30, 0.3) !important;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) .bg-slate-900:not(.w-72):not(header) {
+            background: rgba(15, 23, 42, 0.4) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border: 1px solid rgba(255, 255, 255, 0.09) !important;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        body:not(.light-mode) .bg-slate-800 {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #f3f4f6 !important;
+        }
+
+        body:not(.light-mode) .bg-slate-800:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        body:not(.light-mode) .border-slate-800 {
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) .border-slate-700 {
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+
+        /* ── LIGHT THEME GLASS ── */
+        body.light-mode {
+            background: radial-gradient(circle at 50% 50%, #f3f4f6 0%, #e2e8f0 100%) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .bg-slate-950 {
+            background-color: transparent !important;
+        }
+
+        body.light-mode [class*="bg-slate-950/"] {
+            background-color: rgba(0, 0, 0, 0.02) !important;
+        }
+
+        body.light-mode .bg-slate-900,
+        body.light-mode [class*="bg-slate-900/"] {
+            background: rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border-color: rgba(0, 0, 0, 0.06) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode header.bg-slate-900,
+        body.light-mode header[class*="bg-slate-900/"] {
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.light-mode .bg-slate-900:not(.w-72):not(header),
+        body.light-mode [class*="bg-slate-900/"]:not(.w-72):not(header) {
+            background: rgba(255, 255, 255, 0.45) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border: 1px solid rgba(255, 255, 255, 0.7) !important;
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        body.light-mode .bg-slate-800,
+        body.light-mode [class*="bg-slate-800/"] {
+            background: rgba(0, 0, 0, 0.04) !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .bg-slate-800:hover,
+        body.light-mode [class*="bg-slate-800/"]:hover {
+            background: rgba(0, 0, 0, 0.08) !important;
+            border-color: rgba(0, 0, 0, 0.12) !important;
+        }
+
+        body.light-mode .border-slate-800,
+        body.light-mode [class*="border-slate-800"] {
+            border-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.light-mode .border-slate-700,
+        body.light-mode [class*="border-slate-700"] {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+
+        body.light-mode .text-white {
+            color: #0f172a !important;
+        }
+
+        body.light-mode .text-gray-100,
+        body.light-mode .text-gray-200,
+        body.light-mode .text-gray-300 {
+            color: #1e293b !important;
+        }
+
+        body.light-mode .text-gray-400,
+        body.light-mode .text-gray-450,
+        body.light-mode .text-gray-500 {
+            color: #475569 !important;
+        }
+
+        body.light-mode .text-gray-600 {
+            color: #64748b !important;
+        }
+
+        body.light-mode [class*="hover:bg-slate-800"]:hover,
+        body.light-mode [class*="hover:bg-slate-700"]:hover,
+        body.light-mode [class*="hover:bg-slate-900"]:hover {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+
+        body.light-mode [class*="hover:text-white"]:hover {
+            color: #0f172a !important;
+        }
+
+        body.light-mode [class*="hover:text-gray-100"]:hover,
+        body.light-mode [class*="hover:text-gray-200"]:hover,
+        body.light-mode [class*="hover:text-gray-300"]:hover {
+            color: #1e293b !important;
+        }
+
+        /* ── ACTIVE BUTTONS & CONTROLS GLASS ── */
+        body:not(.light-mode) .sidebar-link.bg-blue-600 {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.75) 0%, rgba(37, 99, 235, 0.75) 100%) !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        body.light-mode .sidebar-link.bg-blue-600 {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff !important;
+        }
+
+        body.light-mode .sidebar-link.bg-blue-600 i,
+        body.light-mode .sidebar-link.bg-blue-600 span {
+            color: #ffffff !important;
+        }
+
+        /* Premium CTA Buttons */
+        .bg-blue-600 {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .bg-blue-600:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.45) !important;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+        }
+
+        body.light-mode .bg-blue-600 {
+            color: #ffffff !important;
+        }
+
+        /* Glassmorphic Cards Hover */
+        .dashboard-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.18) !important;
+        }
+
+        body.light-mode .dashboard-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(31, 38, 135, 0.08);
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* Coming Soon/Logout Glass Modals */
+        .modal {
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        body:not(.light-mode) .modal {
+            background: rgba(15, 22, 38, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .modal {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            color: #0f172a !important;
+        }
+
+        /* Checkbox styling */
+        .todo-item input[type="checkbox"] {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.375rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            display: inline-grid;
+            place-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        body.light-mode .todo-item input[type="checkbox"] {
+            border-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .todo-item input[type="checkbox"]:checked {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .todo-item input[type="checkbox"]:checked::before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        /* toggle dot position */
+        body:not(.light-mode) #theme-toggle-dot {
+            transform: translateX(0px);
+        }
+
+        body.light-mode #theme-toggle-dot {
+            transform: translateX(16px);
+        }
+
+        body.light-mode #theme-toggle-track {
+            background-color: #3b82f6 !important;
+        }
+    </style>
+</head>
+
+<body class="tail-container bg-slate-950 text-gray-100 min-h-screen relative overflow-hidden">
+    <!-- Animated background glowing blobs -->
+    <div class="glass-bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="flex h-screen overflow-hidden relative z-10">
+        <!-- SIDEBAR OVERLAY -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()"
+            class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-all duration-300"></div>
+
+        <!-- SIDEBAR -->
+        <div id="sidebar"
+            class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+            <!-- Top sidebar -->
+            <div class="flex flex-col flex-1 overflow-y-auto">
+                <!-- Logo & Title -->
+                <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-x-3">
+                        <div
+                            class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/35">
+                            <i class="fa-solid fa-arrow-trend-up text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="logo-font text-3xl font-semibold tracking-tighter text-white">Personal-OS</h1>
+                            <p class="text-xs text-gray-400 tracking-widest">LIFE MANAGEMENT</p>
+                        </div>
+                    </div>
+                    <!-- Close button on mobile -->
+                    <button onclick="toggleSidebar()"
+                        class="md:hidden text-gray-400 hover:text-white p-1 cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Main Menu -->
+                <div class="p-6 flex-1 space-y-6">
+                    <div class="space-y-1">
+                        <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-widest px-4 mb-3">Workspace
+                        </h2>
+
+                        <!-- Dashboard Overview (Active) -->
+                        <a href="/"
+                            class="flex items-center gap-x-3.5 px-4 py-3.5 rounded-2xl cursor-pointer sidebar-link bg-blue-600 text-white transition-all font-medium">
+                            <i class="fa-solid fa-gauge text-lg"></i>
+                            <span>Dashboard</span>
+                        </a>
+
+                        <!-- Expense Tracker Link -->
+                        <a href="/expense/"
+                            class="flex items-center gap-x-3.5 px-4 py-3.5 rounded-2xl cursor-pointer sidebar-link text-gray-400 hover:bg-slate-800/50 hover:text-white transition-all font-medium">
+                            <i class="fa-solid fa-receipt text-lg"></i>
+                            <span>Expense Tracking</span>
+                        </a>
+
+                        <!-- Notes Link -->
+                        <a href="/notes/"
+                            class="flex items-center gap-x-3.5 px-4 py-3.5 rounded-2xl cursor-pointer sidebar-link text-gray-400 hover:bg-slate-800/50 hover:text-white transition-all font-medium">
+                            <i class="fa-solid fa-sticky-note text-lg"></i>
+                            <span>Notes</span>
+                        </a>
+
+                        <!-- Diary Link -->
+                        <a href="/diary/"
+                            class="flex items-center gap-x-3.5 px-4 py-3.5 rounded-2xl cursor-pointer sidebar-link text-gray-400 hover:bg-slate-800/50 hover:text-white transition-all font-medium">
+                            <i class="fa-solid fa-book-open text-lg"></i>
+                            <span>Diary</span>
+                        </a>
+
+                        <!-- Todo Link -->
+                        <a href="/todo/"
+                            class="flex items-center gap-x-3.5 px-4 py-3.5 rounded-2xl cursor-pointer sidebar-link text-gray-400 hover:bg-slate-800/50 hover:text-white transition-all font-medium">
+                            <i class="fa-solid fa-square-check text-lg"></i>
+                            <span>Todo</span>
+                        </a>
+
+                        <!-- Consistency Link -->
+                        <a href="/task/"
+                            class="flex items-center gap-x-3.5 px-4 py-3.5 rounded-2xl cursor-pointer sidebar-link text-gray-400 hover:bg-slate-800/50 hover:text-white transition-all font-medium">
+                            <i class="fa-solid fa-chart-line text-lg"></i>
+                            <span>Consistency Tracker</span>
+                        </a>
+
+                        <!-- Reminder Link -->
+                        <a href="/reminder/"
+                            class="flex items-center gap-x-3.5 px-4 py-3.5 rounded-2xl cursor-pointer sidebar-link text-gray-400 hover:bg-slate-800/50 hover:text-white transition-all font-medium">
+                            <i class="fa-solid fa-bell text-lg"></i>
+                            <span>Reminders</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- MAIN CONTAINER -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- HEADER -->
+            <header
+                class="bg-slate-900 border-b border-slate-800 px-3 sm:px-6 md:px-8 py-4 md:py-5 flex items-center justify-between">
+                <div class="flex items-center gap-x-3 sm:gap-x-4">
+                    <!-- Hamburger menu button -->
+                    <button onclick="toggleSidebar()"
+                        class="md:hidden text-gray-400 hover:text-white p-2 cursor-pointer focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-x-2 sm:gap-x-3">
+                            <h2 class="text-base sm:text-lg md:text-2xl font-bold text-white tracking-tight">Dashboard
+                                Overview</h2>
+                            <span
+                                class="hidden sm:inline-flex px-2 py-0.5 text-[10px] sm:text-xs font-semibold bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20">
+                                Active</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-0.5 hidden sm:block">Welcome back, Administrator. Control
+                            your operations
+                            smoothly.</p>
+                    </div>
+                </div>
+
+                <!-- Right header tools -->
+                <div class="flex items-center gap-x-2 sm:gap-x-4">
+                    <div
+                        class="hidden md:flex items-center gap-x-3 bg-slate-800/40 border border-slate-700/60 px-4 py-2 rounded-2xl shadow-sm">
+                        <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span class="text-xs font-medium text-gray-300">Sync Completed</span>
+                    </div>
+
+                    <!-- Theme Toggle (Moved to Header) -->
+                    <button onclick="toggleTheme()"
+                        class="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 hover:bg-slate-700 transition-all rounded-full flex items-center justify-center border border-slate-700/80 text-amber-400 shadow-md cursor-pointer focus:outline-none">
+                        <i class="fa-solid fa-moon text-base sm:text-lg" id="theme-icon"></i>
+                    </button>
+
+                    <!-- Logout Button (Moved to Header) -->
+                    <button onclick="showLogoutModal()"
+                        class="flex items-center justify-center gap-x-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 text-red-400 p-2.5 sm:px-4 sm:py-2 rounded-2xl text-xs font-semibold transition-all cursor-pointer shadow-md focus:outline-none">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- MAIN SCROLLABLE AREA -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8 bg-slate-950">
+                <!-- TOP WIDGETS ROW: METRICS & EXPENSES -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                    <!-- EXPENSE SNAPSHOT CARD -->
+                    <div
+                        class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 dashboard-card lg:col-span-2 flex flex-col justify-between order-2 lg:order-1">
+                        <div>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Expense
+                                        Snapshot</h3>
+                                    <p class="text-xs text-gray-505">Overview of recent monthly analytics</p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 max-w-full">
+                                    <!-- Dynamic Category Pills -->
+                                    <div class="flex items-center gap-1.5 bg-slate-950/40 p-1 rounded-xl border border-slate-800/80 overflow-x-auto max-w-xs sm:max-w-md"
+                                        id="category-filter-pills">
+                                        <!-- Dynamic pill buttons injected by JS -->
+                                    </div>
+
+                                    <a href="/expense/"
+                                        class="w-9 h-9 flex items-center justify-center bg-blue-600/10 border border-blue-500/20 hover:bg-blue-600 rounded-xl text-blue-400 hover:text-white transition-all shrink-0"
+                                        title="Detail Analytics">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Real Expense Chart (Chart.js) -->
+                            <div
+                                class="h-44 w-full relative overflow-hidden mt-6 mb-6 rounded-2xl bg-slate-950/20 border border-slate-800/40 p-2">
+                                <canvas id="expense-chart" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- This-month metrics row -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-800/80 pt-5">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider text-gray-400">This Month Balance</p>
+                                <p id="metric-balance-para"
+                                    class="text-lg font-bold {% if month_balance >= 0 %}text-emerald-400{% else %}text-red-400{% endif %} mt-1">
+                                    ₹<span id="metric-balance">{{ month_balance|floatformat:2 }}</span></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider text-gray-400">This Month Income</p>
+                                <p class="text-lg font-bold text-blue-400 mt-1">₹<span id="metric-income">{{
+                                        month_income|floatformat:2 }}</span></p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider text-gray-400">This Month Expense</p>
+                                <p class="text-lg font-bold text-red-400 mt-1">₹<span id="metric-expense">{{
+                                        month_expense|floatformat:2 }}</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REMINDERS MINI WIDGET -->
+                    <div
+                        class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 dashboard-card flex flex-col justify-between order-1 lg:order-2 lg:col-span-1">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div>
+                                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Upcoming
+                                        Reminders</h3>
+                                    <p class="text-xs text-gray-505">Live countdown to scheduled events</p>
+                                </div>
+                                <a href="/reminder/"
+                                    class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 cursor-pointer flex items-center justify-center text-blue-400 border border-slate-700/60 shadow transition-colors">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </a>
+                            </div>
+
+                            <!-- Real Reminders List from DB -->
+                            <div class="space-y-3.5" id="index-reminders-list">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <div onclick="window.location.href='/reminder/'"
+                            class="w-full py-3.5 mt-5 bg-slate-800 hover:bg-slate-700/80 cursor-pointer text-center text-xs font-semibold text-gray-300 hover:text-white rounded-2xl border border-slate-700/80 transition-all flex items-center justify-center gap-x-2">
+                            <span>Open Reminders Console</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM ROW: WORKSPACE FEATURES (TODOS, NOTES & DIARY) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                    <!-- TODO MINI WIDGET -->
+                    <div
+                        class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 dashboard-card flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div>
+                                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Todo Tasks
+                                    </h3>
+                                    <p class="text-xs text-gray-505">{{ completed_todos }} / {{ total_todos }} completed
+                                    </p>
+                                </div>
+                                <a href="/todo/"
+                                    class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 cursor-pointer flex items-center justify-center text-blue-400 border border-slate-700/60 shadow transition-colors">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </a>
+                            </div>
+
+                            <!-- Real Todo List from DB -->
+                            <div class="space-y-3.5">
+                                {% for todo in recent_todos %}
+                                <label
+                                    class="flex items-center gap-x-3.5 p-3.5 rounded-2xl bg-slate-950/20 border border-slate-800/40 cursor-pointer todo-item transition-all hover:bg-slate-800/20">
+                                    <input type="checkbox" {% if todo.completed %}checked{% endif %}
+                                        onchange="toggleTodoState(this)">
+                                    <span
+                                        class="text-sm text-gray-300 font-medium flex-1 break-words {% if todo.completed %}line-through text-gray-500{% endif %}">{{ todo.title }}</span>
+                                    {% if todo.category %}<span
+                                        class="ml-auto text-[9px] text-gray-500 bg-slate-800/60 px-1.5 py-0.5 rounded-full shrink-0">{{ todo.category }}</span>{% endif %}
+                                </label>
+                                {% empty %}
+                                <div class="text-center py-6 text-gray-500">
+                                    <i class="fa-solid fa-square-check text-2xl mb-2 opacity-30"></i>
+                                    <p class="text-xs">No tasks yet. <a href="/todo/"
+                                            class="text-blue-400 hover:underline">Add some →</a></p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div onclick="window.location.href='/todo/'"
+                            class="w-full py-3.5 mt-5 bg-slate-800 hover:bg-slate-700/80 cursor-pointer text-center text-xs font-semibold text-gray-300 hover:text-white rounded-2xl border border-slate-700/80 transition-all flex items-center justify-center gap-x-2">
+                            <span>Open Tasks Manager</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </div>
+                    </div>
+
+                    <!-- NOTES PREVIEW WIDGET -->
+                    <div
+                        class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 dashboard-card flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div>
+                                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Recent
+                                        Notes</h3>
+                                    <p class="text-xs text-gray-500">Browse your latest analytical updates</p>
+                                </div>
+                                <a href="/notes/"
+                                    class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 cursor-pointer flex items-center justify-center text-blue-400 border border-slate-700/60 shadow transition-colors">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </a>
+                            </div>
+
+                            <!-- Real Notes Cards from DB -->
+                            <div class="space-y-3.5">
+                                {% for note in recent_notes %}
+                                <a href="/notes/"
+                                    class="bg-slate-950/20 hover:bg-slate-800/25 border border-slate-800/60 hover:border-slate-700 rounded-2xl p-4 cursor-pointer transition-all duration-300 flex flex-col">
+                                    <div class="flex justify-between items-start mb-2">
+                                        {% if note.category == 'work' %}
+                                        <span
+                                            class="text-[10px] font-bold text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/10">Work</span>
+                                        {% elif note.category == 'idea' %}
+                                        <span
+                                            class="text-[10px] font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/10">Idea</span>
+                                        {% elif note.category == 'personal' %}
+                                        <span
+                                            class="text-[10px] font-bold text-purple-400 uppercase tracking-widest bg-purple-500/10 px-2.5 py-0.5 rounded-full border border-purple-500/10">Personal</span>
+                                        {% else %}
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-500/10 px-2.5 py-0.5 rounded-full border border-gray-500/10">{{ note.category|default:'Note' }}</span>
+                                        {% endif %}
+                                        <span class="text-[10px] text-gray-500">{{ note.time_ago }}</span>
+                                    </div>
+                                    <h4 class="text-sm font-semibold text-gray-200 mt-1 line-clamp-1">{{ note.title }}
+                                    </h4>
+                                    <p class="text-xs text-gray-400 mt-1.5 leading-relaxed line-clamp-2">{{ note.content }}</p>
+                                </a>
+                                {% empty %}
+                                <div class="col-span-2 text-center py-8 text-gray-500">
+                                    <i class="fa-solid fa-sticky-note text-2xl mb-2 opacity-30"></i>
+                                    <p class="text-xs">No notes yet. <a href="/notes/"
+                                            class="text-blue-400 hover:underline">Create one →</a></p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <a href="/notes/"
+                            class="w-full py-3.5 mt-6 bg-slate-800 hover:bg-slate-700/80 cursor-pointer text-center text-xs font-semibold text-gray-300 hover:text-white rounded-2xl border border-slate-700/80 transition-all flex items-center justify-center gap-x-2">
+                            <span>Open Notes Console</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </div>
+
+                    <!-- DIARY TIMELINE WIDGET -->
+                    <div
+                        class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 dashboard-card flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-5">
+                                <div>
+                                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Diary
+                                        Highlights</h3>
+                                    <p class="text-xs text-gray-500">Recent logs and personal reviews</p>
+                                </div>
+                                <div onclick="window.location.href='/diary/'"
+                                    class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 cursor-pointer flex items-center justify-center text-blue-400 border border-slate-700/60 shadow transition-colors">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </div>
+                            </div>
+
+                            <!-- Real Diary Timeline from DB -->
+                            <div class="space-y-4 relative pl-5 border-l-2 border-slate-800/80 ml-2">
+                                {% for entry in recent_diary %}
+                                <div onclick="window.location.href='/diary/'"
+                                    class="relative cursor-pointer transition-all hover:translate-x-1 duration-200">
+                                    <!-- node dot -->
+                                    <div
+                                        class="w-3.5 h-3.5 rounded-full {% if entry.is_latest %}bg-blue-500{% else %}bg-slate-700{% endif %} absolute -left-[27.5px] top-1 border-4 border-slate-900 shadow">
+                                    </div>
+                                    <span class="text-[10px] font-semibold {{ entry.date_color }} tracking-wider">{{ entry.date_label }}</span>
+                                    <h4 class="text-sm font-semibold text-gray-200 mt-1">{{ entry.title }}</h4>
+                                    {% if entry.content %}<p class="text-xs text-gray-400 mt-1 line-clamp-2">{{ entry.content }}</p>{% endif %}
+                                    {% if entry.mood %}<span
+                                        class="inline-block mt-1.5 text-[9px] text-gray-500 bg-slate-800/50 px-1.5 py-0.5 rounded-full">{{ entry.mood }}</span>{% endif %}
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-6 text-gray-500">
+                                    <i class="fa-solid fa-book-open text-2xl mb-2 opacity-30"></i>
+                                    <p class="text-xs">No diary entries yet. <a href="/diary/"
+                                            class="text-blue-400 hover:underline">Start writing →</a></p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div onclick="window.location.href='/diary/'"
+                            class="w-full py-3.5 mt-6 bg-slate-800 hover:bg-slate-700/80 cursor-pointer text-center text-xs font-semibold text-gray-300 hover:text-white rounded-2xl border border-slate-700/80 transition-all flex items-center justify-center gap-x-2">
+                            <span>Open Personal Diary</span>
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- COMING SOON MODAL -->
+    <div id="coming-soon-modal"
+        class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="modal w-full max-w-sm rounded-3xl p-8 text-center">
+            <div
+                class="w-16 h-16 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400 text-3xl mx-auto mb-6">
+                <i id="coming-soon-icon" class="fa-solid fa-code"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2"><span id="coming-soon-feature">Feature</span> Module</h3>
+            <p class="text-gray-400 text-xs leading-relaxed mb-6">This tracking module is currently in beta status.
+                Complete local database and synchronization endpoints are coming in the next build update!</p>
+            <button onclick="closeComingSoon()"
+                class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 transition-all rounded-2xl font-semibold text-sm shadow-lg shadow-blue-500/20">
+                Awesome, got it!
+            </button>
+        </div>
+    </div>
+
+    <!-- LOGOUT MODAL -->
+    <div id="logout-modal"
+        class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="modal w-full max-w-xs rounded-3xl p-6 text-center">
+            <div
+                class="w-14 h-14 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center text-red-500 text-2xl mx-auto mb-5">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-1">Confirm Logout</h3>
+            <p class="text-gray-400 text-xs mb-6">Are you sure you want to log out of Finance OS?</p>
+            <div class="flex gap-x-3">
+                <button onclick="closeLogoutModal()"
+                    class="flex-1 py-3 border border-slate-700 hover:bg-slate-800 text-xs font-semibold text-gray-300 rounded-2xl transition-all">
+                    Cancel
+                </button>
+                <button onclick="performLogout()"
+                    class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-xs font-semibold text-white rounded-2xl transition-all shadow-md shadow-red-600/10">
+                    Yes, Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal"
+        class="hidden fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="modal w-full max-w-sm rounded-3xl p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-white flex items-center gap-x-2">
+                    <i class="fa-solid fa-circle-user text-blue-400"></i>
+                    Profile Console
+                </h3>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-4 rounded-2xl bg-slate-950/40 border border-slate-800/60 flex items-center gap-x-3.5">
+                    <div
+                        class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center font-bold text-white text-lg">
+                        AD</div>
+                    <div>
+                        <p class="text-sm font-bold text-white leading-tight">Admin User</p>
+                        <p class="text-xs text-gray-400 mt-0.5">Role: Principal Developer</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest px-1">Settings Overview</h4>
+                    <div
+                        class="p-3.5 rounded-2xl bg-slate-950/20 border border-slate-800/40 flex items-center justify-between text-xs">
+                        <span class="text-gray-300">Synchronize Logs</span>
+                        <span
+                            class="text-[10px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-semibold">Active</span>
+                    </div>
+                    <div
+                        class="p-3.5 rounded-2xl bg-slate-950/20 border border-slate-800/40 flex items-center justify-between text-xs">
+                        <span class="text-gray-300">Encryption Method</span>
+                        <span class="text-gray-400">AES-256 GCM</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeSettings()"
+                class="w-full py-3.5 mt-6 bg-slate-800 hover:bg-slate-700 transition-all border border-slate-700 rounded-2xl font-semibold text-xs text-gray-200">
+                Close Panel
+            </button>
+            <!-- Django Injected Data -->
+            <script id="trackers-data" type="application/json">{{ trackers_json|safe }}</script>
+            <script id="index-reminders-data" type="application/json">{{ index_reminders_json|safe }}</script>
+            <script id="chart-month-keys" type="application/json">{{ chart_month_keys|safe }}</script>
+            <script id="today-year" type="application/json">{{ today_year }}</script>
+            <script id="today-month" type="application/json">{{ today_month }}</script>
+            <!-- Reliable CSRF token injected directly from Django -->
+            <script>const CSRF_TOKEN = '{{ csrf_token }}';</script>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Injected backend data for the chart
+        const CHART_LABELS = {{ chart_labels| safe }};
+        const CHART_EXPENSES = {{ chart_expenses| safe }};
+        const CHART_INCOMES = {{ chart_incomes| safe }};
+
+        // Category/Tracker Filtering state & variables
+        let trackers = {};
+        try {
+            const trackersDataElement = document.getElementById('trackers-data');
+            if (trackersDataElement) {
+                trackers = JSON.parse(trackersDataElement.textContent);
+            }
+        } catch (e) {
+            console.error("Failed to parse trackers data", e);
+        }
+
+        let chartMonthKeys = [];
+        try {
+            const keysEl = document.getElementById('chart-month-keys');
+            if (keysEl) chartMonthKeys = JSON.parse(keysEl.textContent);
+        } catch (e) {
+            console.error("Failed to parse chart month keys", e);
+        }
+
+        let todayYear = new Date().getFullYear();
+        let todayMonth = new Date().getMonth() + 1; // 1-based index to match python
+        try {
+            const yEl = document.getElementById('today-year');
+            const mEl = document.getElementById('today-month');
+            if (yEl) todayYear = parseInt(yEl.textContent, 10);
+            if (mEl) todayMonth = parseInt(mEl.textContent, 10);
+        } catch (e) {
+            console.error("Failed to parse today year/month", e);
+        }
+
+        let expenseChartInstance = null;
+        let activeCategory = 'all';
+        let currentGraphStyle = 'line';
+
+        function changeGraphStyle(style) {
+            currentGraphStyle = style;
+            updateChartStyle();
+        }
+
+        function updateChartStyle() {
+            if (!expenseChartInstance) return;
+
+            const datasets = expenseChartInstance.data.datasets;
+            if (currentGraphStyle === 'bar') {
+                // Income
+                datasets[0].type = 'bar';
+                datasets[0].backgroundColor = 'rgba(59,130,246,0.25)';
+                datasets[0].borderColor = '#3b82f6';
+                datasets[0].borderWidth = 1.5;
+                datasets[0].borderRadius = 6;
+                datasets[0].pointRadius = 0;
+                datasets[0].fill = false;
+
+                // Expense
+                datasets[1].type = 'bar';
+                datasets[1].backgroundColor = 'rgba(248,113,113,0.25)';
+                datasets[1].borderColor = '#f87171';
+                datasets[1].borderWidth = 1.5;
+                datasets[1].borderRadius = 6;
+                datasets[1].pointRadius = 0;
+                datasets[1].fill = false;
+            } else if (currentGraphStyle === 'line') {
+                // Income
+                datasets[0].type = 'line';
+                datasets[0].borderColor = '#3b82f6';
+                datasets[0].backgroundColor = 'rgba(59,130,246,0.12)';
+                datasets[0].borderWidth = 2;
+                datasets[0].pointRadius = 3;
+                datasets[0].pointBackgroundColor = '#3b82f6';
+                datasets[0].tension = 0.4;
+                datasets[0].fill = true;
+
+                // Expense
+                datasets[1].type = 'line';
+                datasets[1].borderColor = '#f87171';
+                datasets[1].backgroundColor = 'rgba(248,113,113,0.12)';
+                datasets[1].borderWidth = 2;
+                datasets[1].pointRadius = 3;
+                datasets[1].pointBackgroundColor = '#f87171';
+                datasets[1].tension = 0.4;
+                datasets[1].fill = true;
+            } else {
+                // Mixed: Income as Bar, Expense as Line
+                // Income
+                datasets[0].type = 'bar';
+                datasets[0].backgroundColor = 'rgba(59,130,246,0.25)';
+                datasets[0].borderColor = '#3b82f6';
+                datasets[0].borderWidth = 1.5;
+                datasets[0].borderRadius = 6;
+                datasets[0].pointRadius = 0;
+                datasets[0].fill = false;
+
+                // Expense
+                datasets[1].type = 'line';
+                datasets[1].borderColor = '#f87171';
+                datasets[1].backgroundColor = 'rgba(248,113,113,0.12)';
+                datasets[1].borderWidth = 2;
+                datasets[1].pointRadius = 3;
+                datasets[1].pointBackgroundColor = '#f87171';
+                datasets[1].tension = 0.4;
+                datasets[1].fill = true;
+            }
+            expenseChartInstance.update();
+        }
+
+        function getEntryMonthKey(dateStr) {
+            const parts = dateStr.split('-');
+            if (parts.length < 2) return '';
+            const year = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // 0-based index for Date
+            const date = new Date(year, month, 1);
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${monthNames[month]} ${year}`;
+        }
+
+        function getEntriesForSelection(trackerId) {
+            let entries = [];
+            if (trackerId === 'all') {
+                Object.keys(trackers).forEach(key => {
+                    entries = entries.concat(trackers[key].entries || []);
+                });
+            } else if (trackers[trackerId]) {
+                entries = trackers[trackerId].entries || [];
+            }
+            return entries;
+        }
+
+        function filterDashboardCategory(trackerId) {
+            activeCategory = trackerId;
+
+            // 1. Update filter pill classes
+            const container = document.getElementById('category-filter-pills');
+            if (container) {
+                const buttons = container.querySelectorAll('button');
+                buttons.forEach(btn => {
+                    const btnId = btn.getAttribute('data-tracker-id');
+                    if (btnId === trackerId) {
+                        btn.className = "px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white border border-blue-500/20 shadow-sm shadow-blue-500/20";
+                    } else {
+                        btn.className = "px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-200 bg-transparent hover:bg-slate-800/40 text-gray-400 hover:text-white";
+                    }
+                });
+            }
+
+            // 2. Fetch corresponding entries
+            const entries = getEntriesForSelection(trackerId);
+
+            // 3. Compute new metrics for the current month
+            let monthIncome = 0;
+            let monthExpense = 0;
+
+            entries.forEach(e => {
+                const parts = e.date.split('-');
+                if (parts.length >= 2) {
+                    const eYear = parseInt(parts[0], 10);
+                    const eMonth = parseInt(parts[1], 10);
+                    if (eYear === todayYear && eMonth === todayMonth) {
+                        const amt = parseFloat(e.amount) || 0;
+                        if (e.type === 'income') {
+                            monthIncome += amt;
+                        } else if (e.type === 'expense') {
+                            monthExpense += amt;
+                        }
+                    }
+                }
+            });
+
+            const monthBalance = monthIncome - monthExpense;
+
+            // 4. Update elements
+            const balEl = document.getElementById('metric-balance');
+            const incEl = document.getElementById('metric-income');
+            const expEl = document.getElementById('metric-expense');
+            const balContainer = document.getElementById('metric-balance-para');
+
+            if (balEl) balEl.textContent = monthBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (incEl) incEl.textContent = monthIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (expEl) expEl.textContent = monthExpense.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            if (balContainer) {
+                if (monthBalance >= 0) {
+                    balContainer.className = "text-lg font-bold text-emerald-400 mt-1";
+                } else {
+                    balContainer.className = "text-lg font-bold text-red-400 mt-1";
+                }
+            }
+
+            // 5. Compute new chart data
+            const monthlyExpenses = {};
+            const monthlyIncomes = {};
+            chartMonthKeys.forEach(k => {
+                monthlyExpenses[k] = 0;
+                monthlyIncomes[k] = 0;
+            });
+
+            entries.forEach(e => {
+                const k = getEntryMonthKey(e.date);
+                if (k && k in monthlyExpenses) {
+                    const amt = parseFloat(e.amount) || 0;
+                    if (e.type === 'expense') {
+                        monthlyExpenses[k] += amt;
+                    } else if (e.type === 'income') {
+                        monthlyIncomes[k] += amt;
+                    }
+                }
+            });
+
+            const chartExpenses = chartMonthKeys.map(k => monthlyExpenses[k]);
+            const chartIncomes = chartMonthKeys.map(k => monthlyIncomes[k]);
+
+            // 6. Update chart
+            if (expenseChartInstance) {
+                expenseChartInstance.data.datasets[0].data = chartIncomes;
+                expenseChartInstance.data.datasets[1].data = chartExpenses;
+                updateChartStyle();
+            }
+        }
+
+        function renderCategoryFilterPills() {
+            const container = document.getElementById('category-filter-pills');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Add "All" option
+            const allBtn = document.createElement('button');
+            allBtn.setAttribute('data-tracker-id', 'all');
+            allBtn.textContent = 'All';
+            allBtn.onclick = () => filterDashboardCategory('all');
+            container.appendChild(allBtn);
+
+            // Add dynamic trackers
+            Object.keys(trackers).forEach(key => {
+                if (key === 'personal') {
+                    const btn = document.createElement('button');
+                    btn.setAttribute('data-tracker-id', key);
+                    btn.textContent = trackers[key].name;
+                    btn.onclick = () => filterDashboardCategory(key);
+                    container.appendChild(btn);
+                }
+            });
+
+            // Set initial active state
+            if (trackers['personal']) {
+                filterDashboardCategory('personal');
+            } else {
+                filterDashboardCategory('all');
+            }
+        }
+
+        // Interactive check-lists
+        function toggleTodoState(checkbox) {
+            const labelSpan = checkbox.nextElementSibling;
+            if (checkbox.checked) {
+                labelSpan.classList.add('line-through', 'text-gray-500');
+                labelSpan.classList.remove('text-gray-300');
+            } else {
+                labelSpan.classList.remove('line-through', 'text-gray-500');
+                labelSpan.classList.add('text-gray-300');
+            }
+        }
+
+        // Modals Management
+        function showComingSoon(feature) {
+            document.getElementById('coming-soon-feature').textContent = feature;
+            const iconElement = document.getElementById('coming-soon-icon');
+
+            // Set respective icons
+            if (feature === 'Notes') {
+                iconElement.className = 'fa-solid fa-sticky-note';
+            } else if (feature === 'Diary') {
+                iconElement.className = 'fa-solid fa-book-open';
+            } else if (feature === 'Todo') {
+                iconElement.className = 'fa-solid fa-square-check';
+            }
+
+            document.getElementById('coming-soon-modal').classList.remove('hidden');
+        }
+
+        function closeComingSoon() {
+            document.getElementById('coming-soon-modal').classList.add('hidden');
+        }
+
+        function showLogoutModal() {
+            document.getElementById('logout-modal').classList.remove('hidden');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logout-modal').classList.add('hidden');
+        }
+
+        function performLogout() {
+            window.location.href = '/logout/';
+        }
+
+        function showSettings() {
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        // Theme switching routine (Synchronized with Expense pages)
+        let isDarkMode = true;
+
+        function applyTheme(dark) {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const label = document.getElementById('theme-label');
+
+            if (dark) {
+                body.classList.remove('light-mode');
+                if (icon) { icon.className = 'fa-solid fa-moon text-amber-400'; }
+                if (label) label.textContent = 'Dark Mode';
+            } else {
+                body.classList.add('light-mode');
+                if (icon) { icon.className = 'fa-solid fa-sun text-amber-400'; }
+                if (label) label.textContent = 'Light Mode';
+            }
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            applyTheme(isDarkMode);
+            localStorage.setItem('expenseFlowTheme', isDarkMode ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('expenseFlowTheme');
+            isDarkMode = saved !== 'light';
+            applyTheme(isDarkMode);
+        }
+
+        // Bootstrap App
+        window.onload = function () {
+            loadTheme();
+
+            // Close modals when clicking backdrop
+            const modals = document.querySelectorAll('.fixed');
+            modals.forEach(modal => {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            });
+
+            // ESC shortcut for modals
+            document.addEventListener('keydown', function (e) {
+                if (e.key === "Escape") {
+                    modals.forEach(m => m.classList.add('hidden'));
+                }
+            });
+
+            // ── Draw Expense Chart ────────────────────────────────────────────
+            const canvas = document.getElementById('expense-chart');
+            if (canvas && typeof Chart !== 'undefined') {
+                const isDark = !document.body.classList.contains('light-mode');
+                const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+                const textColor = isDark ? '#6b7280' : '#94a3b8';
+
+                expenseChartInstance = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: CHART_LABELS,
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: CHART_INCOMES,
+                                type: 'line',
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59,130,246,0.12)',
+                                borderWidth: 2,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#3b82f6',
+                                tension: 0.4,
+                                fill: true,
+                                order: 2
+                            },
+                            {
+                                label: 'Expense',
+                                data: CHART_EXPENSES,
+                                type: 'line',
+                                borderColor: '#f87171',
+                                backgroundColor: 'rgba(248,113,113,0.12)',
+                                borderWidth: 2,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#f87171',
+                                tension: 0.4,
+                                fill: true,
+                                order: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: isDark ? 'rgba(15,23,42,0.9)' : 'rgba(255,255,255,0.95)',
+                                titleColor: isDark ? '#f3f4f6' : '#0f172a',
+                                bodyColor: isDark ? '#9ca3af' : '#475569',
+                                borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                                borderWidth: 1,
+                                padding: 10,
+                                callbacks: {
+                                    label: ctx => ` ₹${ctx.parsed.y.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } },
+                            y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 }, callback: v => '₹' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v) } }
+                        }
+                    }
+                });
+            }
+            // Populate category filter pills (which also updates metrics/chart for current state)
+            renderCategoryFilterPills();
+            // Render upcoming reminders mini widget
+            renderIndexReminders();
+            setInterval(renderIndexReminders, 1000);
+        };
+
+        // Reminders countdown widget logic
+        let indexReminders = [];
+        try {
+            const remData = document.getElementById('index-reminders-data');
+            if (remData) {
+                indexReminders = JSON.parse(remData.textContent);
+            }
+        } catch (e) {
+            console.error("Failed to parse index reminders data", e);
+        }
+
+        function renderIndexReminders() {
+            const container = document.getElementById('index-reminders-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const now = new Date();
+
+            indexReminders.forEach(r => {
+                let targetDate = new Date(r.date + 'T' + r.time);
+                if (isNaN(targetDate.getTime())) {
+                    const [year, month, day] = r.date.split('-');
+                    const [hour, minute] = r.time.split(':');
+                    targetDate = new Date(year, month - 1, day, hour, minute);
+                }
+
+                // If passed and is recurring, roll forward to next year
+                if (r.is_recurring) {
+                    while (targetDate < now) {
+                        targetDate.setFullYear(targetDate.getFullYear() + 1);
+                    }
+                }
+
+                const diffMs = targetDate - now;
+                let text = "";
+                let colorClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+
+                if (diffMs <= 0) {
+                    text = "Passed";
+                    colorClass = "bg-red-500/10 text-red-400 border-red-500/20";
+                } else {
+                    const totalMinutes = Math.floor(diffMs / (60 * 1000));
+                    const totalHours = Math.floor(totalMinutes / 60);
+                    const totalDays = Math.floor(totalHours / 24);
+
+                    if (totalDays > 0) {
+                        text = `${totalDays}d ${totalHours % 24}h`;
+                    } else if (totalHours > 0) {
+                        text = `${totalHours}h ${totalMinutes % 60}m`;
+                    } else {
+                        const totalSeconds = Math.floor(diffMs / 1000);
+                        text = `${totalMinutes}m ${totalSeconds % 60}s`;
+                    }
+
+                    if (diffMs < 24 * 60 * 60 * 1000) {
+                        colorClass = "bg-red-500/10 text-red-400 border-red-500/20";
+                    } else if (diffMs <= 3 * 24 * 60 * 60 * 1000) {
+                        colorClass = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+                    }
+                }
+
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-3.5 rounded-2xl bg-slate-950/20 border border-slate-800/40 hover:bg-slate-800/25 hover:border-slate-700 transition-all cursor-pointer select-none text-left";
+                item.onclick = () => window.location.href = '/reminder/';
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-x-2.5 min-w-0 flex-1">
+                        <div class="w-8 h-8 rounded-xl bg-slate-800/40 border border-slate-750 flex items-center justify-center text-blue-400 shrink-0">
+                            <i class="fa-solid fa-bell text-xs ${diffMs > 0 && diffMs < 24 * 60 * 60 * 1000 ? 'animate-bounce' : ''}"></i>
+                        </div>
+                        <div class="truncate flex flex-col min-w-0">
+                            <span class="text-xs text-gray-300 font-semibold truncate">${escapeHTML(r.title)}</span>
+                            <span class="text-[9px] text-gray-505 font-bold uppercase tracking-wider mt-0.5">${r.date} ${r.time}</span>
+                        </div>
+                    </div>
+                    <span class="ml-2 px-2 py-0.5 text-[9px] font-bold border rounded-full shrink-0 ${colorClass}">${text}</span>
+                `;
+                container.appendChild(item);
+            });
+
+            if (indexReminders.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 text-gray-505 border border-dashed border-slate-800/60 rounded-2xl p-4 bg-slate-950/10">
+                        <i class="fa-solid fa-bell-slash text-xl mb-1.5 opacity-30 text-gray-400"></i>
+                        <p class="text-[10px]">No upcoming reminders.</p>
+                        <a href="/reminder/" class="text-[10px] text-blue-400 hover:underline mt-1 block">Schedule one →</a>
+                    </div>
+                `;
+            }
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar && overlay) {
+                const isHidden = sidebar.classList.contains('-translate-x-full');
+                if (isHidden) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                }
+            }
+        }
+        window.toggleSidebar = toggleSidebar;
+    </script>
+</body>
+
+</html>

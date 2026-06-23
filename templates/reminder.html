@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminders - Personal OS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+        :root {
+            --glass-blur: 20px;
+            --glass-saturate: 180%;
+        }
+
+        .tail-container {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Animated background glowing blobs */
+        .glass-bg-blobs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.45;
+            mix-blend-mode: plus-lighter;
+            animation: float 25s infinite alternate ease-in-out;
+            transition: all 0.8s ease-in-out;
+        }
+
+        /* Dark mode blobs: vibrant cyan, violet, indigo */
+        body:not(.light-mode) .blob-1 {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
+            width: 600px;
+            height: 600px;
+            top: -10%;
+            left: 10%;
+            animation-duration: 20s;
+        }
+
+        body:not(.light-mode) .blob-2 {
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0) 70%);
+            width: 700px;
+            height: 700px;
+            bottom: -10%;
+            right: 15%;
+            animation-duration: 28s;
+            animation-delay: -5s;
+        }
+
+        body:not(.light-mode) .blob-3 {
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, rgba(14, 165, 233, 0) 70%);
+            width: 550px;
+            height: 550px;
+            top: 40%;
+            left: 50%;
+            animation-duration: 24s;
+            animation-delay: -10s;
+        }
+
+        /* Light mode blobs: soft pastel blue, pink, peach */
+        body.light-mode .blob-1 {
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0) 70%);
+            width: 700px;
+            height: 700px;
+            top: -5%;
+            left: 5%;
+            animation-duration: 22s;
+        }
+
+        body.light-mode .blob-2 {
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0) 70%);
+            width: 800px;
+            height: 800px;
+            bottom: -5%;
+            right: 10%;
+            animation-duration: 32s;
+            animation-delay: -4s;
+        }
+
+        body.light-mode .blob-3 {
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0) 70%);
+            width: 600px;
+            height: 600px;
+            top: 35%;
+            left: 45%;
+            animation-duration: 26s;
+            animation-delay: -8s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0px, 0px) scale(1) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(40px, -60px) scale(1.1) rotate(120deg);
+            }
+
+            66% {
+                transform: translate(-30px, 40px) scale(0.95) rotate(240deg);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1) rotate(360deg);
+            }
+        }
+
+        /* ── DARK THEME GLASS ── */
+        body:not(.light-mode) {
+            background: radial-gradient(circle at 50% 50%, #080b16 0%, #02040a 100%) !important;
+            color: #f3f4f6 !important;
+        }
+
+        body:not(.light-mode) .bg-slate-950 {
+            background-color: transparent !important;
+        }
+
+        body:not(.light-mode) .bg-slate-900 {
+            background: rgba(10, 15, 30, 0.55) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) header.bg-slate-900 {
+            background: rgba(10, 15, 30, 0.3) !important;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) .bg-slate-900:not(.w-72):not(header) {
+            background: rgba(15, 23, 42, 0.4) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border: 1px solid rgba(255, 255, 255, 0.09) !important;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        body:not(.light-mode) .bg-slate-800 {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #f3f4f6 !important;
+        }
+
+        body:not(.light-mode) .bg-slate-800:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        body:not(.light-mode) .border-slate-800 {
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) .border-slate-700 {
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+
+        body:not(.light-mode) input,
+        body:not(.light-mode) select {
+            background: rgba(10, 15, 30, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+            backdrop-filter: blur(10px);
+        }
+
+        body:not(.light-mode) input:focus,
+        body:not(.light-mode) select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.25) !important;
+        }
+
+        /* ── LIGHT THEME GLASS ── */
+        body.light-mode {
+            background: radial-gradient(circle at 50% 50%, #f3f4f6 0%, #e2e8f0 100%) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .bg-slate-950 {
+            background-color: transparent !important;
+        }
+
+        body.light-mode [class*="bg-slate-950/"] {
+            background-color: rgba(0, 0, 0, 0.02) !important;
+        }
+
+        body.light-mode .bg-slate-900,
+        body.light-mode [class*="bg-slate-900/"] {
+            background: rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border-color: rgba(0, 0, 0, 0.06) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode header.bg-slate-900,
+        body.light-mode header[class*="bg-slate-900/"] {
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.light-mode .bg-slate-900:not(.w-72):not(header),
+        body.light-mode [class*="bg-slate-900/"]:not(.w-72):not(header) {
+            background: rgba(255, 255, 255, 0.45) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border: 1px solid rgba(255, 255, 255, 0.7) !important;
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        body.light-mode .bg-slate-800,
+        body.light-mode [class*="bg-slate-800/"] {
+            background: rgba(0, 0, 0, 0.04) !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .bg-slate-800:hover,
+        body.light-mode [class*="bg-slate-800/"]:hover {
+            background: rgba(0, 0, 0, 0.08) !important;
+            border-color: rgba(0, 0, 0, 0.12) !important;
+        }
+
+        body.light-mode .border-slate-800,
+        body.light-mode [class*="border-slate-800"] {
+            border-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.light-mode .border-slate-700,
+        body.light-mode [class*="border-slate-700"] {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+
+        body.light-mode input,
+        body.light-mode select {
+            background: rgba(255, 255, 255, 0.55) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            color: #0f172a !important;
+            backdrop-filter: blur(10px);
+        }
+
+        body.light-mode input:focus,
+        body.light-mode select:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.18) !important;
+        }
+
+        /* Text colors overrides */
+        body.light-mode .text-white {
+            color: #0f172a !important;
+        }
+
+        body.light-mode .text-gray-100,
+        body.light-mode .text-gray-250,
+        body.light-mode .text-gray-300 {
+            color: #1e293b !important;
+        }
+
+        body.light-mode .text-gray-400,
+        body.light-mode .text-gray-450,
+        body.light-mode .text-gray-500 {
+            color: #475569 !important;
+        }
+
+        body.light-mode .text-gray-600 {
+            color: #64748b !important;
+        }
+
+        body.light-mode [class*="hover:bg-slate-800"]:hover,
+        body.light-mode [class*="hover:bg-slate-700"]:hover,
+        body.light-mode [class*="hover:bg-slate-900"]:hover {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+
+        body.light-mode [class*="hover:text-white"]:hover {
+            color: #0f172a !important;
+        }
+
+        body.light-mode [class*="hover:text-gray-100"]:hover,
+        body.light-mode [class*="hover:text-gray-200"]:hover,
+        body.light-mode [class*="hover:text-gray-300"]:hover {
+            color: #1e293b !important;
+        }
+
+        /* Premium CTA Buttons */
+        .bg-blue-600 {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .bg-blue-600:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.45) !important;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+        }
+
+        body.light-mode .bg-blue-600 {
+            color: #ffffff !important;
+        }
+
+        /* Glassmorphic Cards Hover */
+        .reminder-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reminder-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.18) !important;
+        }
+
+        body.light-mode .reminder-card:hover {
+            box-shadow: 0 15px 30px -8px rgba(31, 38, 135, 0.08);
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* Modals and Overlays */
+        .modal {
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        body:not(.light-mode) .modal {
+            background: rgba(15, 22, 38, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .modal {
+            background: rgba(255, 255, 255, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            color: #0f172a !important;
+        }
+
+        /* toggle track & dot */
+        body:not(.light-mode) #theme-toggle-dot {
+            transform: translateX(0px);
+        }
+
+        body.light-mode #theme-toggle-dot {
+            transform: translateX(16px);
+        }
+
+        body.light-mode #theme-toggle-track {
+            background-color: #3b82f6 !important;
+        }
+
+        /* Custom Mini Calendar styling overrides */
+        .calendar-cell {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-cell.has-entry::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+        }
+
+        body:not(.light-mode) .calendar-cell.active-day {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        body.light-mode .calendar-cell.active-day {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Filter Tab Transitions */
+        .filter-tab {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .filter-tab.active-tab {
+            background: rgba(59, 130, 246, 0.15) !important;
+            border-color: rgba(59, 130, 246, 0.3) !important;
+            color: #3b82f6 !important;
+        }
+
+        body.light-mode .filter-tab.active-tab {
+            background: rgba(59, 130, 246, 0.08) !important;
+            color: #2563eb !important;
+        }
+
+        /* Custom scrollbar matching */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 99px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.35);
+        }
+
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="tail-container bg-slate-950 text-gray-100 min-h-screen relative overflow-hidden">
+    <!-- Animated background glowing blobs -->
+    <div class="glass-bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- MAIN APP STRUCTURE -->
+    <div class="flex h-screen overflow-hidden relative z-10">
+        <!-- SIDEBAR DRAWER OVERLAY (Mobile only) -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()"
+            class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-all duration-300"></div>
+
+        <!-- SIDEBAR Navigation Menu -->
+        <div id="sidebar"
+            class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+
+            <div class="flex flex-col flex-1 overflow-y-auto">
+                <!-- Branding Header -->
+                <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-x-3">
+                        <div
+                            class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/35">
+                            <i class="fa-solid fa-bell text-white text-xl animate-pulse"></i>
+                        </div>
+                        <div>
+                            <h1 class="logo-font text-3xl font-semibold tracking-tighter text-white">Reminders</h1>
+                            <p class="text-xs text-gray-400 tracking-widest">PERSONAL OS</p>
+                        </div>
+                    </div>
+                    <!-- Close button on mobile -->
+                    <button onclick="toggleSidebar()"
+                        class="md:hidden text-gray-400 hover:text-white p-1 cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation List -->
+                <div class="p-6 flex-1 space-y-6">
+                    <div class="space-y-1.5">
+                        <a href="/"
+                            class="flex items-center gap-x-3.5 px-4 py-3 rounded-2xl cursor-pointer text-gray-400 hover:bg-slate-800/40 hover:text-white transition-all font-medium text-sm">
+                            <i class="fa-solid fa-gauge text-base text-gray-400"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN WORKSPACE CONTAINER -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- HEADER BAR -->
+            <header
+                class="bg-slate-900 border-b border-slate-800 px-4 md:px-8 py-5 flex items-center justify-between gap-x-4 shrink-0">
+                <div class="flex items-center gap-x-3 shrink-0">
+                    <!-- Hamburger button (Mobile) -->
+                    <button onclick="toggleSidebar()"
+                        class="md:hidden text-gray-400 hover:text-white p-2 cursor-pointer focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight logo-font">Reminders Console</h2>
+                    <span
+                        class="hidden sm:inline-block px-3 py-1 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20 uppercase tracking-wider">Sync
+                        Active</span>
+                </div>
+
+                <!-- Theme Toggle Header -->
+                <div class="flex items-center gap-x-3 shrink-0">
+                    <button onclick="toggleTheme()" id="theme-toggle-header"
+                        class="flex items-center gap-x-3 bg-slate-900/40 hover:bg-slate-800 border border-slate-800 px-4 py-2 rounded-2xl text-xs font-semibold text-gray-400 hover:text-white transition-all cursor-pointer"
+                        title="Toggle Dark/Light Mode">
+                        <div class="flex items-center gap-x-2">
+                            <i class="fa-solid fa-moon text-amber-400" id="theme-icon"></i>
+                            <span id="theme-label" class="font-medium text-gray-300 hidden sm:block ">Dark
+                                Mode</span>
+                        </div>
+
+                    </button>
+                </div>
+            </header>
+
+            <!-- WORKSPACE PANEL -->
+            <div class="flex-1 flex flex-col-reverse md:flex-row overflow-y-auto md:overflow-hidden relative">
+
+                <!-- LEFT PANEL: Add Form & Calendar Calendar -->
+                <div
+                    class="w-full md:w-80 lg:w-[360px] border-r border-slate-800/60 p-5 md:overflow-y-auto overflow-visible bg-slate-950/25 flex flex-col gap-y-6 shrink-0">
+
+                    <!-- ADD REMINDER FORM CARD -->
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-5 space-y-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-x-2">
+                            <i class="fa-solid fa-bell-plus text-blue-400"></i>
+                            <span>Create Reminder</span>
+                        </h3>
+                        <form id="reminder-form" onsubmit="handleAddReminder(event)" class="space-y-4">
+                            <div class="space-y-1.5">
+                                <label for="rem-title"
+                                    class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider px-1">Reminder
+                                    Title</label>
+                                <input type="text" id="rem-title" placeholder="e.g. Call Client, Drink Water..."
+                                    required
+                                    class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-2xl px-4 py-3 text-xs outline-none transition-all text-white">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1.5">
+                                    <label for="rem-date"
+                                        class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider px-1">Date</label>
+                                    <input type="date" id="rem-date" required
+                                        class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-2xl px-4 py-3 text-xs outline-none transition-all text-white">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label for="rem-time"
+                                        class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider px-1">Time</label>
+                                    <input type="time" id="rem-time" required
+                                        class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-2xl px-4 py-3 text-xs outline-none transition-all text-white">
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl text-xs cursor-pointer shadow-lg shadow-blue-500/20 flex items-center justify-center gap-x-2 transition-all">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                <span>Schedule Reminder</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- INTERACTIVE MONTH CALENDAR -->
+                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-5 space-y-3 flex-1 min-h-[300px]">
+                        <div class="flex items-center justify-between px-1">
+                            <h3 id="calendar-month-year"
+                                class="text-xs font-bold text-gray-400 uppercase tracking-widest">June 2026</h3>
+                            <div class="flex items-center gap-x-1.5">
+                                <button onclick="changeMonth(-1)"
+                                    class="text-gray-500 hover:text-white transition-all cursor-pointer p-0.5">
+                                    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                                </button>
+                                <button onclick="changeMonth(1)"
+                                    class="text-gray-500 hover:text-white transition-all cursor-pointer p-0.5">
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1 text-center justify-items-center" id="calendar-grid">
+                            <!-- Day labels and dates drawn dynamically -->
+                        </div>
+                        <p class="text-[9px] text-gray-500 text-center italic mt-2">Days with active reminders are
+                            marked with a dot. Click a day to select it in the form.</p>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL: Filters, Search & Reminders List Feed -->
+                <div
+                    class="flex-1 bg-slate-900/10 backdrop-blur-sm flex flex-col md:overflow-hidden overflow-visible relative">
+                    <!-- Filters and Search Toolbar -->
+                    <div
+                        class="px-6 py-4 border-b border-slate-800/60 bg-slate-900/40 backdrop-blur flex flex-col sm:flex-row sm:items-center justify-between shrink-0 gap-4">
+                        <!-- Filters Tabs -->
+                        <div
+                            class="flex items-center gap-x-1.5 bg-slate-950/45 p-1 rounded-2xl w-full sm:w-fit border border-slate-800/60 overflow-x-auto max-w-full scrollbar-none shrink-0">
+                            <button onclick="switchFilter('all')" id="filter-all"
+                                class="filter-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer active-tab shrink-0">
+                                All
+                            </button>
+                            <button onclick="switchFilter('active')" id="filter-active"
+                                class="filter-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer shrink-0">
+                                Active / Upcoming
+                            </button>
+                            <button onclick="switchFilter('recurring')" id="filter-recurring"
+                                class="filter-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer shrink-0"
+                                title="Reminders passed and rescheduled for the same date next year">
+                                Recurring Next Year
+                            </button>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div class="relative w-full sm:max-w-xs">
+                            <input id="search-input" onkeyup="filterFeed()" type="text"
+                                placeholder="Search reminders by title..."
+                                class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-3xl py-2 px-4 pl-10 text-xs outline-none transition-all">
+                            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reminders Feed Feed -->
+                    <div class="flex-1 md:overflow-y-auto overflow-visible p-6 md:p-8 space-y-4"
+                        id="reminders-container">
+                        <!-- Populated dynamically via JavaScript -->
+                    </div>
+
+                    <!-- Footer Status -->
+                    <div
+                        class="px-6 py-4 border-t border-slate-800/60 bg-slate-900/40 backdrop-blur flex items-center justify-between shrink-0">
+                        <span id="reminders-count" class="text-xs text-gray-500 font-semibold">0 reminders
+                            scheduled</span>
+                        <div id="autosave-indicator"
+                            class="flex items-center gap-x-1.5 text-emerald-400 text-xs font-semibold transition-all duration-300 opacity-0 select-none">
+                            <i class="fa-solid fa-circle-check text-xs"></i>
+                            <span>Synced to Database</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION MODAL -->
+    <div id="delete-confirm-modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+        <div class="modal w-full max-w-sm rounded-3xl p-8 text-center">
+            <div
+                class="w-16 h-16 mx-auto bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mb-6 text-red-500 text-3xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Delete Reminder?</h3>
+            <p class="text-gray-400 text-xs leading-relaxed mb-6">Are you sure you want to delete this reminder
+                permanently? This action cannot be undone.</p>
+            <div class="flex gap-x-3">
+                <button onclick="closeDeleteModal()"
+                    class="flex-1 py-3.5 border border-slate-700 hover:bg-slate-850 text-xs font-bold text-gray-300 hover:text-white rounded-2xl transition-all cursor-pointer">
+                    Cancel
+                </button>
+                <button onclick="confirmDelete()"
+                    class="flex-1 py-3.5 bg-red-600 hover:bg-red-700 text-xs font-bold text-white rounded-2xl transition-all shadow-md shadow-red-600/20 cursor-pointer">
+                    Yes, Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Django JSON data context -->
+    <script id="reminders-data" type="application/json">{{ reminders_json|safe }}</script>
+
+    <script>
+        // Core states
+        let reminders = [];
+        let activeFilter = 'all';
+        let searchQuery = '';
+        let currentCalMonth = new Date();
+        let activeDate = new Date();
+        let reminderToDeleteId = null;
+        let isDarkMode = true;
+        let countdownTimer = null;
+
+        // Theme management handlers (Synced via localStorage key expenseFlowTheme)
+        function applyTheme(dark) {
+            const body = document.body;
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            const label = document.getElementById('theme-label');
+
+            if (dark) {
+                body.classList.remove('light-mode');
+                html.classList.add('dark');
+                if (icon) { icon.className = 'fa-solid fa-moon text-amber-400'; }
+                if (label) { label.innerText = 'Dark Mode'; }
+            } else {
+                body.classList.add('light-mode');
+                html.classList.remove('dark');
+                if (icon) { icon.className = 'fa-solid fa-sun text-amber-400'; }
+                if (label) { label.innerText = 'Light Mode'; }
+            }
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            applyTheme(isDarkMode);
+            localStorage.setItem('expenseFlowTheme', isDarkMode ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('expenseFlowTheme');
+            isDarkMode = saved !== 'light';
+            applyTheme(isDarkMode);
+        }
+
+        // Mobile sidebar navigation toggler
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Interactive mini calendar grids rendering logic
+        function changeMonth(direction) {
+            currentCalMonth.setMonth(currentCalMonth.getMonth() + direction);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const calendarMonthYear = document.getElementById('calendar-month-year');
+            const calendarGrid = document.getElementById('calendar-grid');
+            if (!calendarGrid || !calendarMonthYear) return;
+
+            calendarMonthYear.innerText = currentCalMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+            calendarGrid.innerHTML = '';
+
+            // Generate week labels
+            const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            daysOfWeek.forEach(day => {
+                const dayLabel = document.createElement('div');
+                dayLabel.className = 'text-[9px] font-bold text-gray-500 uppercase pb-1.5';
+                dayLabel.innerText = day;
+                calendarGrid.appendChild(dayLabel);
+            });
+
+            const year = currentCalMonth.getFullYear();
+            const month = currentCalMonth.getMonth();
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            // Empty cells for alignment
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-cell empty';
+                calendarGrid.appendChild(emptyCell);
+            }
+
+            const now = new Date();
+
+            // Populate days
+            for (let day = 1; day <= totalDays; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell w-8 h-8 rounded-lg text-xs font-semibold flex items-center justify-center';
+                cell.innerText = day;
+
+                const cellDate = new Date(year, month, day);
+                const dateStr = getLocalDateString(cellDate);
+
+                // Highlight date cell if active/upcoming reminder is scheduled on it
+                const hasReminder = reminders.some(r => {
+                    const targetDate = new Date(r.date + 'T' + r.time);
+                    return r.date === dateStr && targetDate >= now;
+                });
+
+                if (hasReminder) {
+                    cell.classList.add('has-entry');
+                }
+
+                // Highlight selected day
+                if (dateStr === getLocalDateString(activeDate)) {
+                    cell.classList.add('active-day');
+                }
+
+                cell.addEventListener('click', () => {
+                    activeDate = cellDate;
+                    document.getElementById('rem-date').value = dateStr;
+                    renderCalendar();
+                });
+
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        function getLocalDateString(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Form handler to add custom reminders
+        function handleAddReminder(e) {
+            e.preventDefault();
+            const titleInput = document.getElementById('rem-title');
+            const dateInput = document.getElementById('rem-date');
+            const timeInput = document.getElementById('rem-time');
+
+            const title = titleInput.value.trim();
+            const dateVal = dateInput.value;
+            const timeVal = timeInput.value;
+
+            if (!title || !dateVal || !timeVal) return;
+
+            const newReminder = {
+                id: 'rem_' + Date.now(),
+                title: title,
+                date: dateVal,
+                time: timeVal,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            };
+
+            reminders.push(newReminder);
+
+            // Reset fields
+            titleInput.value = '';
+            // keep date and time as placeholder or reset
+            dateInput.value = getLocalDateString(new Date());
+            timeInput.value = '12:00';
+
+            syncRemindersToDatabase();
+            renderFeed();
+            renderCalendar();
+        }
+
+        // Delete reminders
+        function openDeleteModal(id) {
+            reminderToDeleteId = id;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            reminderToDeleteId = null;
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+        }
+
+        function confirmDelete() {
+            if (reminderToDeleteId) {
+                reminders = reminders.filter(r => r.id !== reminderToDeleteId);
+                syncRemindersToDatabase();
+                renderFeed();
+                renderCalendar();
+            }
+            closeDeleteModal();
+        }
+
+        // AJAX Database Sync helper
+        let syncTimeout = null;
+        function syncRemindersToDatabase() {
+            if (syncTimeout) clearTimeout(syncTimeout);
+            syncTimeout = setTimeout(() => {
+                const csrftoken = getCookie('csrftoken');
+                fetch('/api/save_reminders/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(reminders)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            const indicator = document.getElementById('autosave-indicator');
+                            if (indicator) {
+                                indicator.classList.remove('opacity-0');
+                                setTimeout(() => indicator.classList.add('opacity-0'), 1500);
+                            }
+                        } else {
+                            console.error("AJAX DB sync error:", data.message);
+                        }
+                    })
+                    .catch(err => console.error("AJAX reminder post failed:", err));
+            }, 600);
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Filters and search controllers
+        function switchFilter(filterName) {
+            activeFilter = filterName;
+            document.querySelectorAll('.filter-tab').forEach(btn => btn.classList.remove('active-tab'));
+            document.getElementById(`filter-${filterName}`).classList.add('active-tab');
+            renderFeed();
+        }
+
+        function filterFeed() {
+            searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+            renderFeed();
+        }
+
+        // Helper countdown calculator
+        function getCountdownTextAndColor(reminderDateStr, reminderTimeStr, isRecurring) {
+            const now = new Date();
+            let targetDate = new Date(reminderDateStr + 'T' + reminderTimeStr);
+
+            if (isNaN(targetDate.getTime())) {
+                const [year, month, day] = reminderDateStr.split('-');
+                const [hour, minute] = reminderTimeStr.split(':');
+                targetDate = new Date(year, month - 1, day, hour, minute);
+            }
+
+            // Moving / Recurring Next Year check
+            if (targetDate < now) {
+                if (isRecurring) {
+                    while (targetDate < now) {
+                        targetDate.setFullYear(targetDate.getFullYear() + 1);
+                    }
+                }
+            }
+
+            const diffMs = targetDate - now;
+
+            if (diffMs <= 0) {
+                return {
+                    text: "Time Reached (Passed)",
+                    colorClass: "bg-red-500/10 text-red-400 border-red-500/20",
+                    iconClass: "fa-solid fa-clock-rotate-left",
+                    passed: true,
+                    targetDate: targetDate
+                };
+            }
+
+            const totalMinutes = Math.floor(diffMs / (60 * 1000));
+            const totalHours = Math.floor(totalMinutes / 60);
+            const totalDays = Math.floor(totalHours / 24);
+
+            let text = "";
+            if (totalDays > 0) {
+                text = `${totalDays}d ${totalHours % 24}h remaining`;
+            } else if (totalHours > 0) {
+                text = `${totalHours}h ${totalMinutes % 60}m remaining`;
+            } else {
+                const totalSeconds = Math.floor(diffMs / 1000);
+                text = `${totalMinutes}m ${totalSeconds % 60}s remaining`;
+            }
+
+            // Color mapping: Red (within 24h), Blue (1-3 days), Green (farther out)
+            let colorClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+            if (diffMs < 24 * 60 * 60 * 1000) {
+                colorClass = "bg-red-500/10 text-red-400 border-red-500/20";
+            } else if (diffMs <= 3 * 24 * 60 * 60 * 1000) {
+                colorClass = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+            }
+
+            return {
+                text: text,
+                colorClass: colorClass,
+                iconClass: diffMs < 24 * 60 * 60 * 1000 ? "fa-solid fa-triangle-exclamation" : "fa-solid fa-clock",
+                passed: false,
+                targetDate: targetDate
+            };
+        }
+
+        // Render feed items
+        function renderFeed() {
+            const container = document.getElementById('reminders-container');
+            if (!container) return;
+
+            container.innerHTML = '';
+            const now = new Date();
+
+            // Separate list based on search queries
+            let list = reminders;
+            if (searchQuery) {
+                list = list.filter(r => r.title.toLowerCase().includes(searchQuery));
+            }
+
+            // Filters logic:
+            // "active": future occurrences
+            // "recurring": passed occurrences (which will recur next year)
+            let filteredList = [];
+
+            list.forEach(r => {
+                let targetDate = new Date(r.date + 'T' + r.time);
+                if (isNaN(targetDate.getTime())) {
+                    const [year, month, day] = r.date.split('-');
+                    const [hour, minute] = r.time.split(':');
+                    targetDate = new Date(year, month - 1, day, hour, minute);
+                }
+
+                const hasPassed = targetDate < now;
+
+                if (activeFilter === 'all') {
+                    filteredList.push({ ...r, hasPassed });
+                } else if (activeFilter === 'active' && !hasPassed) {
+                    filteredList.push({ ...r, hasPassed });
+                } else if (activeFilter === 'recurring' && hasPassed) {
+                    filteredList.push({ ...r, hasPassed });
+                }
+            });
+
+            // Sort list: soonest remaining time first (or closest next year occurrence first)
+            filteredList.sort((a, b) => {
+                const infoA = getCountdownTextAndColor(a.date, a.time, a.hasPassed);
+                const infoB = getCountdownTextAndColor(b.date, b.time, b.hasPassed);
+                return infoA.targetDate - infoB.targetDate;
+            });
+
+            // Draw cards
+            filteredList.forEach(r => {
+                const isRecur = r.hasPassed;
+                const info = getCountdownTextAndColor(r.date, r.time, isRecur);
+
+                const card = document.createElement('div');
+                card.className = `reminder-card bg-slate-900/50 border border-slate-800 rounded-3xl p-5 hover:border-slate-700 transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4`;
+
+                let recurrenceLabel = '';
+                let displayDateText = r.date;
+
+                if (isRecur) {
+                    const nextYearDate = new Date(info.targetDate);
+                    const formattedNextYear = nextYearDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                    displayDateText = formattedNextYear;
+                    recurrenceLabel = `<span class="px-2 py-0.5 text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full select-none" title="Recurring annually next year">Recurring Next Year</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-start gap-x-4 flex-1 min-w-0 w-full">
+                        <div class="w-10 h-10 rounded-2xl bg-slate-800/40 border border-slate-750 flex items-center justify-center text-blue-400 mt-0.5 shrink-0">
+                            <i class="fa-solid fa-clock-rotate-left text-sm ${isRecur ? 'animate-pulse' : ''}"></i>
+                        </div>
+                        <div class="space-y-1 min-w-0 flex-1">
+                            <div class="flex items-center gap-x-2.5 flex-wrap gap-y-1">
+                                <h4 class="text-sm font-semibold text-gray-100 truncate">${escapeHTML(r.title)}</h4>
+                                ${recurrenceLabel}
+                            </div>
+                            <div class="flex items-center gap-x-3 text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
+                                <span><i class="fa-solid fa-calendar-days text-[9px] mr-1"></i>${displayDateText}</span>
+                                <span><i class="fa-solid fa-clock text-[9px] mr-1"></i>${r.time}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-x-4 shrink-0 justify-between sm:justify-start w-full sm:w-auto">
+                        <!-- Countdown Badge -->
+                        <span class="px-3 py-1.5 text-xs font-semibold border rounded-full select-none flex items-center gap-x-1.5 ${info.colorClass}">
+                            <i class="${info.iconClass} text-[10px]"></i>
+                            <span>${info.text}</span>
+                        </span>
+                        
+                        <!-- Delete button -->
+                        <button onclick="openDeleteModal('${r.id}')"
+                            class="w-9 h-9 border border-red-950/20 bg-red-950/10 hover:bg-red-900/30 rounded-xl cursor-pointer flex items-center justify-center text-red-400 transition-all shrink-0"
+                            title="Delete reminder">
+                            <i class="fa-solid fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            if (filteredList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 text-xs text-gray-500 leading-relaxed border border-dashed border-slate-800 rounded-3xl p-5 bg-slate-900/10">
+                        <i class="fa-solid fa-bell-slash text-3xl mb-3 block opacity-30 text-gray-400"></i>
+                        No reminders found matching query.
+                    </div>
+                `;
+            }
+
+            document.getElementById('reminders-count').innerText = `${reminders.length} reminder${reminders.length !== 1 ? 's' : ''} scheduled`;
+        }
+
+        // Live countdown clock ticker
+        function startCountdownTicker() {
+            if (countdownTimer) clearInterval(countdownTimer);
+            countdownTimer = setInterval(() => {
+                // Read reminder cards and update countdown badges
+                renderFeed();
+            }, 1000);
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // Keyboard support
+        function registerKeybinds() {
+            document.addEventListener('keydown', function (e) {
+                if (e.key === "Escape") {
+                    closeDeleteModal();
+                }
+            });
+        }
+
+        // Startup initializer
+        function initializeApp() {
+            loadTheme();
+
+            // Hydrate database context
+            const dataElem = document.getElementById('reminders-data');
+            if (dataElem) {
+                try {
+                    reminders = JSON.parse(dataElem.textContent);
+                } catch (e) {
+                    reminders = [];
+                    console.error("Reminders hydration failed", e);
+                }
+            }
+
+            // Set default inputs to today
+            document.getElementById('rem-date').value = getLocalDateString(new Date());
+            document.getElementById('rem-time').value = '12:00';
+
+            // Close modals on clicks outer
+            const deleteModal = document.getElementById('delete-confirm-modal');
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function (e) {
+                    if (e.target === deleteModal) closeDeleteModal();
+                });
+            }
+
+            registerKeybinds();
+            renderCalendar();
+            renderFeed();
+            startCountdownTicker();
+        }
+
+        window.onload = initializeApp;
+    </script>
+</body>
+
+</html>

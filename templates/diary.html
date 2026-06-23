@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diary</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    :root {
+      --glass-blur: 20px;
+      --glass-saturate: 180%;
+    }
+
+    .tail-container {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .logo-font {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Animated background glowing blobs */
+    .glass-bg-blobs {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.45;
+      mix-blend-mode: plus-lighter;
+      animation: float 25s infinite alternate ease-in-out;
+      transition: all 0.8s ease-in-out;
+    }
+
+    /* Dark mode blobs: vibrant cyan, violet, indigo */
+    body:not(.light-mode) .blob-1 {
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
+      width: 600px;
+      height: 600px;
+      top: -10%;
+      left: 10%;
+      animation-duration: 20s;
+    }
+
+    body:not(.light-mode) .blob-2 {
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0) 70%);
+      width: 700px;
+      height: 700px;
+      bottom: -10%;
+      right: 15%;
+      animation-duration: 28s;
+      animation-delay: -5s;
+    }
+
+    body:not(.light-mode) .blob-3 {
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, rgba(14, 165, 233, 0) 70%);
+      width: 550px;
+      height: 550px;
+      top: 40%;
+      left: 50%;
+      animation-duration: 24s;
+      animation-delay: -10s;
+    }
+
+    /* Light mode blobs: soft pastel blue, pink, peach */
+    body.light-mode .blob-1 {
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0) 70%);
+      width: 700px;
+      height: 700px;
+      top: -5%;
+      left: 5%;
+      animation-duration: 22s;
+    }
+
+    body.light-mode .blob-2 {
+      background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0) 70%);
+      width: 800px;
+      height: 800px;
+      bottom: -5%;
+      right: 10%;
+      animation-duration: 32s;
+      animation-delay: -4s;
+    }
+
+    body.light-mode .blob-3 {
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0) 70%);
+      width: 600px;
+      height: 600px;
+      top: 35%;
+      left: 45%;
+      animation-duration: 26s;
+      animation-delay: -8s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0px, 0px) scale(1) rotate(0deg);
+      }
+
+      33% {
+        transform: translate(40px, -60px) scale(1.1) rotate(120deg);
+      }
+
+      66% {
+        transform: translate(-30px, 40px) scale(0.95) rotate(240deg);
+      }
+
+      100% {
+        transform: translate(0px, 0px) scale(1) rotate(360deg);
+      }
+    }
+
+    /* ── DARK THEME GLASS ── */
+    body:not(.light-mode) {
+      background: radial-gradient(circle at 50% 50%, #080b16 0%, #02040a 100%) !important;
+      color: #f3f4f6 !important;
+    }
+
+    body:not(.light-mode) .bg-slate-950 {
+      background-color: transparent !important;
+    }
+
+    body:not(.light-mode) .bg-slate-900 {
+      background: rgba(10, 15, 30, 0.55) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body:not(.light-mode) header.bg-slate-900 {
+      background: rgba(10, 15, 30, 0.3) !important;
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body:not(.light-mode) .bg-slate-900:not(.w-72):not(header) {
+      background: rgba(15, 23, 42, 0.4) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border: 1px solid rgba(255, 255, 255, 0.09) !important;
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    body:not(.light-mode) .bg-slate-800 {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: #f3f4f6 !important;
+    }
+
+    body:not(.light-mode) .bg-slate-800:hover {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    body:not(.light-mode) .border-slate-800 {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body:not(.light-mode) .border-slate-700 {
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    body:not(.light-mode) input,
+    body:not(.light-mode) textarea {
+      background: rgba(10, 15, 30, 0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: #ffffff !important;
+      backdrop-filter: blur(10px);
+    }
+
+    body:not(.light-mode) input:focus,
+    body:not(.light-mode) textarea:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.25) !important;
+    }
+
+    /* ── LIGHT THEME GLASS ── */
+    body.light-mode {
+      background: radial-gradient(circle at 50% 50%, #f3f4f6 0%, #e2e8f0 100%) !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .bg-slate-950 {
+      background-color: transparent !important;
+    }
+
+    body.light-mode [class*="bg-slate-950/"] {
+      background-color: rgba(0, 0, 0, 0.02) !important;
+    }
+
+    body.light-mode .bg-slate-900,
+    body.light-mode [class*="bg-slate-900/"] {
+      background: rgba(255, 255, 255, 0.5) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border-color: rgba(0, 0, 0, 0.06) !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode header.bg-slate-900,
+    body.light-mode header[class*="bg-slate-900/"] {
+      background: rgba(255, 255, 255, 0.3) !important;
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border-color: rgba(0, 0, 0, 0.06) !important;
+    }
+
+    body.light-mode .bg-slate-900:not(.w-72):not(header),
+    body.light-mode [class*="bg-slate-900/"]:not(.w-72):not(header) {
+      background: rgba(255, 255, 255, 0.45) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
+      box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    }
+
+    body.light-mode .bg-slate-800,
+    body.light-mode [class*="bg-slate-800/"] {
+      background: rgba(0, 0, 0, 0.04) !important;
+      border: 1px solid rgba(0, 0, 0, 0.06) !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .bg-slate-800:hover,
+    body.light-mode [class*="bg-slate-800/"]:hover {
+      background: rgba(0, 0, 0, 0.08) !important;
+      border-color: rgba(0, 0, 0, 0.12) !important;
+    }
+
+    body.light-mode .border-slate-800,
+    body.light-mode [class*="border-slate-800"] {
+      border-color: rgba(0, 0, 0, 0.06) !important;
+    }
+
+    body.light-mode .border-slate-700,
+    body.light-mode [class*="border-slate-700"] {
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    body.light-mode input,
+    body.light-mode textarea,
+    body.light-mode select {
+      background: rgba(255, 255, 255, 0.55) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      color: #0f172a !important;
+      backdrop-filter: blur(10px);
+    }
+
+    body.light-mode input:focus,
+    body.light-mode textarea:focus,
+    body.light-mode select:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.18) !important;
+    }
+
+    /* Text colors overrides */
+    body.light-mode .text-white {
+      color: #0f172a !important;
+    }
+
+    body.light-mode .text-gray-100,
+    body.light-mode .text-gray-200,
+    body.light-mode .text-gray-300 {
+      color: #1e293b !important;
+    }
+
+    body.light-mode .text-gray-400,
+    body.light-mode .text-gray-450,
+    body.light-mode .text-gray-500 {
+      color: #475569 !important;
+    }
+
+    body.light-mode .text-gray-600 {
+      color: #64748b !important;
+    }
+
+    body.light-mode [class*="hover:bg-slate-800"]:hover,
+    body.light-mode [class*="hover:bg-slate-700"]:hover,
+    body.light-mode [class*="hover:bg-slate-900"]:hover {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.light-mode [class*="hover:text-white"]:hover {
+      color: #0f172a !important;
+    }
+
+    body.light-mode [class*="hover:text-gray-100"]:hover,
+    body.light-mode [class*="hover:text-gray-200"]:hover,
+    body.light-mode [class*="hover:text-gray-300"]:hover {
+      color: #1e293b !important;
+    }
+
+    /* ── ACTIVE BUTTONS & CONTROLS GLASS ── */
+    .bg-blue-600 {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .bg-blue-600:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.45) !important;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+    }
+
+    body.light-mode .bg-blue-600 {
+      color: #ffffff !important;
+    }
+
+    body.light-mode #theme-label {
+      color: #1e293b !important;
+    }
+
+    /* toggle track & dot */
+    body:not(.light-mode) #theme-toggle-dot {
+      transform: translateX(0px);
+    }
+
+    body.light-mode #theme-toggle-dot {
+      transform: translateX(16px);
+    }
+
+    body.light-mode #theme-toggle-track {
+      background-color: #3b82f6 !important;
+    }
+
+    .entry-card {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      user-select: none;
+    }
+
+    body.light-mode .entry-card {
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .entry-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.18) !important;
+    }
+
+    body.light-mode .entry-card:hover {
+      box-shadow: 0 15px 30px -8px rgba(31, 38, 135, 0.08);
+      border-color: rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .entry-card.active-card {
+      border-color: #3b82f6 !important;
+      background: rgba(59, 130, 246, 0.08) !important;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2), inset 0 1px 0 rgba(59, 130, 246, 0.15);
+    }
+
+    body.light-mode .entry-card.active-card {
+      background: rgba(59, 130, 246, 0.05) !important;
+    }
+
+    .entry-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .entry-card-date {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .entry-card-mood {
+      font-size: 1rem;
+    }
+
+    .entry-card-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    body:not(.light-mode) .entry-card-title {
+      color: #ffffff;
+    }
+
+    body.light-mode .entry-card-title {
+      color: #0f172a;
+    }
+
+    .entry-card-snippet {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+
+    body.light-mode .entry-card-snippet {
+      color: #475569;
+    }
+
+    .entry-card-tags {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+
+    .entry-card-tag {
+      font-size: 0.55rem;
+      font-weight: 700;
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    /* Custom Mini Calendar styling overrides */
+    .calendar-cell {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .calendar-cell.has-entry::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    }
+
+    body:not(.light-mode) .calendar-cell.active-day {
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    body.light-mode .calendar-cell.active-day {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    /* custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.15);
+      border-radius: 99px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.35);
+    }
+
+    /* Print formatting */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+
+      #sidebar,
+      #notes-list-col,
+      .editor-header,
+      .editor-footer {
+        display: none !important;
+      }
+
+      .editor-body {
+        padding: 0 !important;
+      }
+
+      #entry-title {
+        border-bottom: 2px solid black !important;
+        color: black !important;
+      }
+
+      #entry-content {
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="tail-container bg-slate-950 text-gray-100 min-h-screen relative overflow-hidden">
+  <!-- Animated background glowing blobs -->
+  <div class="glass-bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- MAIN APP STRUCTURE -->
+  <div class="flex h-screen overflow-hidden relative z-10">
+    <!-- SIDEBAR DRAWER OVERLAY (Mobile only) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()"
+      class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-all duration-300"></div>
+
+    <!-- SIDEBAR Navigation Menu -->
+    <div id="sidebar"
+      class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+
+      <div class="flex flex-col flex-1 overflow-y-auto">
+        <!-- Branding Header -->
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-x-3">
+            <div
+              class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/35">
+              <i class="fa-solid fa-feather-pointed text-white text-xl animate-pulse"></i>
+            </div>
+            <div>
+              <h1 class="logo-font text-3xl font-semibold tracking-tighter text-white">Diary</h1>
+              <p class="text-xs text-gray-400 tracking-widest">PERSONAL OS</p>
+            </div>
+          </div>
+          <!-- Close button on mobile -->
+          <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white p-1 cursor-pointer">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Navigation List -->
+        <div class="p-6 space-y-6">
+          <!-- Standard redirects -->
+          <div class="space-y-1.5">
+            <a href="/"
+              class="flex items-center gap-x-3.5 px-4 py-3 rounded-2xl cursor-pointer text-gray-400 hover:bg-slate-800/40 hover:text-white transition-all font-medium text-sm">
+              <i class="fa-solid fa-gauge text-base text-gray-400"></i>
+              <span>Dashboard</span>
+            </a>
+          </div>
+
+          <!-- Custom Mini Calendar widget -->
+          <div class="pt-4 border-t border-slate-800/60 space-y-3">
+            <div class="flex items-center justify-between px-2">
+              <h3 id="calendar-month-year" class="text-xs font-semibold text-gray-400 uppercase tracking-widest">May
+                2026</h3>
+              <div class="flex items-center gap-x-1.5">
+                <button id="prev-month-btn" class="text-gray-500 hover:text-white transition-all cursor-pointer p-0.5">
+                  <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                </button>
+                <button id="next-month-btn" class="text-gray-500 hover:text-white transition-all cursor-pointer p-0.5">
+                  <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-7 gap-1 text-center" id="calendar-grid">
+              <!-- Day labels and dates will draw dynamically here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN EDITOR VIEWPORT CONTAINER -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- HEADER BAR -->
+      <header
+        class="bg-slate-900 border-b border-slate-800 px-4 md:px-8 py-5 flex items-center justify-between gap-x-4 shrink-0">
+        <div class="flex items-center gap-x-3 shrink-0">
+          <!-- Hamburger button (Mobile) -->
+          <button onclick="toggleSidebar()"
+            class="md:hidden text-gray-400 hover:text-white p-2 cursor-pointer focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight logo-font">Diary Workspace</h2>
+          <span
+            class="hidden sm:inline-block px-3 py-1 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20 uppercase tracking-wider">Sync
+            Active</span>
+        </div>
+
+        <!-- Center Search Box -->
+        <div class="flex-1 max-w-md hidden md:block">
+          <div class="relative">
+            <input id="search-input" type="text" placeholder="Search journal entries, tags, content..."
+              class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-3xl py-2.5 px-5 pl-12 text-sm outline-none transition-all">
+            <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
+              <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Theme / Date switcher -->
+        <div class="flex items-center gap-x-3 shrink-0">
+          <!-- Theme Switcher Toggle Switch -->
+          <button id="theme-toggle-header"
+            class="flex items-center gap-x-3 bg-slate-900/40 hover:bg-slate-800 border border-slate-800 px-4 py-2 rounded-2xl text-xs font-semibold text-gray-400 hover:text-white transition-all cursor-pointer"
+            title="Toggle Dark/Light Mode">
+            <div class="flex items-center gap-x-2">
+              <i class="fa-solid fa-moon text-amber-400" id="theme-icon"></i>
+              <span id="theme-label" class="font-medium text-gray-300 hidden sm:block">Dark Mode</span>
+            </div>
+
+          </button>
+        </div>
+      </header>
+
+      <!-- WORKSPACE FEED AND EDITOR PANEL -->
+      <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- MOBILE SEARCH BAR (Visible on mobile only) -->
+        <div id="mobile-search-bar"
+          class="md:hidden absolute top-0 left-0 right-0 bg-slate-950/80 backdrop-blur border-b border-slate-800/60 p-3 z-20">
+          <div class="relative">
+            <input id="search-input-mobile" type="text" placeholder="Search journals or tags..."
+              class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-3xl py-2 px-4 pl-10 text-xs outline-none transition-all">
+            <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Left Column: Note Card feed list -->
+        <div id="notes-list-col"
+          class="w-full md:w-80 lg:w-[350px] border-r border-slate-800/60 flex md:flex flex-col shrink-0 overflow-y-auto bg-slate-950/20 p-4 pt-16 md:pt-4">
+          <div class="flex items-center justify-between mb-3 px-2">
+            <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Journals Feed</span>
+          </div>
+
+          <div class="space-y-3 flex-1" id="entries-list">
+            <!-- Populated dynamically via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Right Column: Note text editor -->
+        <div id="editor-col"
+          class="flex-1 bg-slate-900/10 backdrop-blur-sm hidden md:flex flex-col overflow-hidden relative">
+          <!-- Editor controls header -->
+          <div
+            class="px-6 py-4 border-b border-slate-800/60 bg-slate-900/40 backdrop-blur flex items-center justify-between shrink-0 gap-x-4 flex-wrap gap-y-2">
+            <div class="flex items-center gap-x-3">
+              <!-- Back button (Mobile only) -->
+              <button onclick="switchMobileView('feed')" id="btn-back-to-feed"
+                class="md:hidden text-gray-400 hover:text-white p-2 -ml-2 cursor-pointer focus:outline-none"
+                title="Back to Journals Feed">
+                <i class="fa-solid fa-chevron-left text-lg"></i>
+              </button>
+              <div class="flex flex-col gap-y-0.5">
+                <h3 id="active-day-heading" class="text-sm font-bold text-white leading-tight">May 29, 2026</h3>
+                <span id="active-day-weekday"
+                  class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">Friday Ledger Entry</span>
+              </div>
+            </div>
+
+            <!-- Control buttons toolbar -->
+            <div class="flex items-center gap-2">
+              <button onclick="window.print()" title="Print / PDF diary"
+                class="w-9 h-9 border border-slate-800 bg-slate-900/40 hover:bg-slate-800 rounded-xl cursor-pointer flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                <i class="fa-solid fa-print text-sm"></i>
+              </button>
+              <button id="btn-delete-entry" title="Delete current day entry"
+                class="w-9 h-9 border border-red-950/20 bg-red-950/10 hover:bg-red-900/30 rounded-xl cursor-pointer flex items-center justify-center text-red-400 transition-all">
+                <i class="fa-solid fa-trash text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Editor core body -->
+          <div id="editor-body-panel" class="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+            <!-- Input for Title -->
+            <input type="text" id="entry-title"
+              class="w-full bg-transparent border-0 p-3 rounded-xl border-b border-transparent focus:border-slate-800 text-2xl md:text-3xl font-bold py-2 outline-none text-white focus:ring-0 placeholder-gray-600 transition-all"
+              placeholder="Title your reflection..." autocomplete="off">
+
+            <!-- Mood Picker -->
+            <div class="space-y-2">
+              <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Logging Mood</span>
+              <div class="flex flex-wrap gap-2" id="mood-picker">
+                <button
+                  class="mood-option px-3.5 py-1.5 bg-slate-800/40 hover:bg-slate-700/60 transition-all border border-slate-800 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer flex items-center gap-x-2"
+                  data-mood="inspired">
+                  <span>😊 Inspired</span>
+                </button>
+                <button
+                  class="mood-option px-3.5 py-1.5 bg-slate-800/40 hover:bg-slate-700/60 transition-all border border-slate-800 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer flex items-center gap-x-2"
+                  data-mood="calm">
+                  <span>🍃 Peaceful</span>
+                </button>
+                <button
+                  class="mood-option px-3.5 py-1.5 bg-slate-800/40 hover:bg-slate-700/60 transition-all border border-slate-800 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer flex items-center gap-x-2"
+                  data-mood="focus">
+                  <span>🎯 High Focus</span>
+                </button>
+                <button
+                  class="mood-option px-3.5 py-1.5 bg-slate-800/40 hover:bg-slate-700/60 transition-all border border-slate-800 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer flex items-center gap-x-2"
+                  data-mood="fatigued">
+                  <span>🥱 Exhausted</span>
+                </button>
+                <button
+                  class="mood-option px-3.5 py-1.5 bg-slate-800/40 hover:bg-slate-700/60 transition-all border border-slate-800 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer flex items-center gap-x-2"
+                  data-mood="worried">
+                  <span>😰 Anxious</span>
+                </button>
+                <button
+                  class="mood-option px-3.5 py-1.5 bg-slate-800/40 hover:bg-slate-700/60 transition-all border border-slate-800 rounded-xl text-xs font-semibold text-gray-400 hover:text-white cursor-pointer flex items-center gap-x-2"
+                  data-mood="creative">
+                  <span>🎨 Creative</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tags pillbox module -->
+            <div class="space-y-2">
+              <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Tags / Categories</span>
+              <div class="flex flex-wrap gap-2 bg-slate-800/20 border border-slate-800 p-2.5 rounded-2xl"
+                id="tags-pillbox">
+                <input type="text" id="tag-input"
+                  class="bg-transparent border-0 outline-none text-xs text-gray-200 placeholder-gray-600 focus:ring-0"
+                  placeholder="Type tag and hit Enter..." autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Main content editor area -->
+            <textarea id="entry-content"
+              class="w-full min-h-[350px] bg-transparent border-0 p-3 rounded-xl focus:ring-0 text-sm md:text-base leading-relaxed resize-none outline-none text-gray-300 placeholder-gray-600 transition-all"
+              placeholder="Start writing. Capture your goals, moments, thoughts..."></textarea>
+          </div>
+
+          <!-- Editor footer -->
+          <div
+            class="px-4 md:px-6 py-3 md:py-4 border-t border-slate-800/60 bg-slate-900/40 backdrop-blur flex items-center justify-between shrink-0 gap-x-2">
+            <span id="word-counter" class="text-[10px] md:text-xs text-gray-500 font-semibold shrink-0">0 words / 0
+              chars</span>
+
+            <!-- Visual autosave indicator -->
+            <div id="autosave-indicator"
+              class="flex items-center gap-x-1 text-emerald-400 text-[10px] md:text-xs font-semibold transition-all duration-300 opacity-0 select-none">
+              <i class="fa-solid fa-circle-check"></i>
+              <span class="hidden sm:inline">Ledger Autosaved</span>
+              <span class="sm:hidden">Saved</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="backup-file-loader" class="hidden" accept=".json">
+
+  <!-- Django Injected Data -->
+  <script id="diary-data" type="application/json">{{ diary_json|safe }}</script>
+
+  <script>
+    // State storage engine
+    let journalEntries = {};
+    let activeDate = new Date();
+    let currentCalMonth = new Date();
+    let activeMood = '';
+    let activeTags = [];
+    let autosaveTimeout = null;
+    let isDarkMode = true;
+    let currentMobileView = 'feed';
+
+    // DOM Elements Caching
+    const calendarMonthYear = document.getElementById('calendar-month-year');
+    const calendarGrid = document.getElementById('calendar-grid');
+    const prevMonthBtn = document.getElementById('prev-month-btn');
+    const nextMonthBtn = document.getElementById('next-month-btn');
+    const entriesList = document.getElementById('entries-list');
+    const searchInput = document.getElementById('search-input');
+    const searchInputMobile = document.getElementById('search-input-mobile');
+
+    const activeDayHeading = document.getElementById('active-day-heading');
+    const activeDayWeekday = document.getElementById('active-day-weekday');
+
+    const entryTitle = document.getElementById('entry-title');
+    const entryContent = document.getElementById('entry-content');
+    const wordCounter = document.getElementById('word-counter');
+    const autosaveIndicator = document.getElementById('autosave-indicator');
+
+    const moodPicker = document.getElementById('mood-picker');
+    const tagsPillbox = document.getElementById('tags-pillbox');
+    const tagInput = document.getElementById('tag-input');
+
+    const backupFileLoader = document.getElementById('backup-file-loader');
+
+    const btnDeleteEntry = document.getElementById('btn-delete-entry');
+    const themeToggleBtn = document.getElementById('theme-toggle-header');
+
+    // Initialize Journal App
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved database
+      try {
+        const diaryDataElement = document.getElementById('diary-data');
+        journalEntries = JSON.parse(diaryDataElement.textContent);
+      } catch (e) {
+        console.warn("Failed to load diary from Django context, falling back to local storage:", e);
+        const savedDb = localStorage.getItem('zen_journal_db');
+        if (savedDb) {
+          try {
+            journalEntries = JSON.parse(savedDb);
+          } catch (err) {
+            journalEntries = {};
+          }
+        }
+      }
+
+      // Load Visual theme selection
+      const savedTheme = localStorage.getItem('expenseFlowTheme') || localStorage.getItem('journal_theme') || 'dark';
+      isDarkMode = savedTheme === 'dark';
+      applyTheme(isDarkMode);
+
+      // Event bindings
+      themeToggleBtn.addEventListener('click', toggleTheme);
+      prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+      nextMonthBtn.addEventListener('click', () => changeMonth(1));
+
+      // Synchronize search inputs on desktop and mobile
+      searchInput.addEventListener('input', (e) => {
+        if (searchInputMobile) searchInputMobile.value = e.target.value;
+        renderFeed();
+      });
+      if (searchInputMobile) {
+        searchInputMobile.addEventListener('input', (e) => {
+          searchInput.value = e.target.value;
+          renderFeed();
+        });
+      }
+
+      tagInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAddTag();
+      });
+
+      entryTitle.addEventListener('input', triggerAutosave);
+      entryContent.addEventListener('input', () => {
+        triggerAutosave();
+        updateWordCount();
+      });
+
+      moodPicker.addEventListener('click', (e) => {
+        const option = e.target.closest('.mood-option');
+        if (option) {
+          document.querySelectorAll('.mood-option').forEach(btn => {
+            btn.classList.remove('bg-blue-600', 'text-white', 'border-transparent');
+            btn.classList.add('bg-slate-800/40', 'text-gray-400', 'border-slate-800');
+          });
+          option.classList.add('bg-blue-600', 'text-white', 'border-transparent');
+          option.classList.remove('bg-slate-800/40', 'text-gray-400', 'border-slate-800');
+          activeMood = option.getAttribute('data-mood');
+          triggerAutosave();
+        }
+      });
+
+      btnDeleteEntry.addEventListener('click', deleteActiveEntry);
+      backupFileLoader.addEventListener('change', importBackupJSON);
+
+      // Render calendar grids
+      updateActiveDayDisplay();
+      renderCalendar();
+      renderFeed();
+      loadEntry(activeDate);
+
+      // Initialize responsive view on mobile
+      if (window.innerWidth < 768) {
+        switchMobileView('feed');
+      } else {
+        document.getElementById('notes-list-col').classList.remove('hidden');
+        document.getElementById('editor-col').classList.remove('hidden');
+      }
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) {
+          document.getElementById('notes-list-col').classList.remove('hidden');
+          document.getElementById('editor-col').classList.remove('hidden');
+          const mobileSearchBar = document.getElementById('mobile-search-bar');
+          if (mobileSearchBar) mobileSearchBar.classList.remove('hidden');
+        } else {
+          switchMobileView(currentMobileView);
+        }
+      });
+    });
+
+    // Theme control handlers
+    function applyTheme(dark) {
+      const body = document.body;
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+
+      if (dark) {
+        body.classList.remove('light-mode');
+        html.classList.add('dark');
+        if (icon) { icon.className = 'fa-solid fa-moon text-amber-400'; }
+        if (label) { label.innerText = 'Dark Mode'; }
+      } else {
+        body.classList.add('light-mode');
+        html.classList.remove('dark');
+        if (icon) { icon.className = 'fa-solid fa-sun text-amber-400'; }
+        if (label) { label.innerText = 'Light Mode'; }
+      }
+    }
+
+    function toggleTheme() {
+      isDarkMode = !isDarkMode;
+      applyTheme(isDarkMode);
+      localStorage.setItem('expenseFlowTheme', isDarkMode ? 'dark' : 'light');
+      localStorage.setItem('journal_theme', isDarkMode ? 'dark' : 'light');
+    }
+
+    // Switch views on mobile layout
+    function switchMobileView(view) {
+      if (window.innerWidth >= 768) return;
+      currentMobileView = view;
+      const notesListCol = document.getElementById('notes-list-col');
+      const editorCol = document.getElementById('editor-col');
+      const mobileSearchBar = document.getElementById('mobile-search-bar');
+
+      if (view === 'feed') {
+        if (notesListCol) notesListCol.classList.remove('hidden');
+        if (editorCol) editorCol.classList.add('hidden');
+        if (mobileSearchBar) mobileSearchBar.classList.remove('hidden');
+      } else {
+        if (notesListCol) notesListCol.classList.add('hidden');
+        if (editorCol) editorCol.classList.remove('hidden');
+        if (mobileSearchBar) mobileSearchBar.classList.add('hidden');
+      }
+    }
+
+    // Toggle Sidebar Menu
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Custom calendar renderer logic
+    function changeMonth(direction) {
+      currentCalMonth.setMonth(currentCalMonth.getMonth() + direction);
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      calendarMonthYear.innerText = currentCalMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+      calendarGrid.innerHTML = '';
+
+      // Generate week labels
+      const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      daysOfWeek.forEach(day => {
+        const dayLabel = document.createElement('div');
+        dayLabel.className = 'text-[9px] font-bold text-gray-505 uppercase pb-1.5';
+        dayLabel.innerText = day;
+        calendarGrid.appendChild(dayLabel);
+      });
+
+      const year = currentCalMonth.getFullYear();
+      const month = currentCalMonth.getMonth();
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      // Empty lead indices
+      for (let i = 0; i < firstDayIndex; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-cell empty';
+        calendarGrid.appendChild(emptyCell);
+      }
+
+      // Populate calendar days
+      for (let day = 1; day <= totalDays; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'calendar-cell w-8 h-8 rounded-lg text-xs font-semibold flex items-center justify-center';
+        cell.innerText = day;
+
+        const cellDate = new Date(year, month, day);
+        const dateStr = getLocalDateString(cellDate);
+
+        // Highlight dates that contain entries
+        if (journalEntries[dateStr]) {
+          cell.classList.add('has-entry');
+        }
+
+        // Highlight active date select
+        if (dateStr === getLocalDateString(activeDate)) {
+          cell.classList.add('active-day');
+        }
+
+        cell.addEventListener('click', () => {
+          selectDate(cellDate);
+        });
+
+        calendarGrid.appendChild(cell);
+      }
+    }
+
+    function selectDate(date) {
+      // Save current active day draft first
+      saveActiveEntry(true);
+
+      activeDate = date;
+      updateActiveDayDisplay();
+      renderCalendar();
+      renderFeed();
+      loadEntry(activeDate);
+
+      // Close mobile sidebar if open
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+
+      // Switch mobile view to editor
+      switchMobileView('editor');
+    }
+
+    function updateActiveDayDisplay() {
+      activeDayHeading.innerText = activeDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+      activeDayWeekday.innerText = `${activeDate.toLocaleDateString(undefined, { weekday: 'long' })} Reflection Log`;
+    }
+
+    // Save and load entries methods
+    function loadEntry(date) {
+      const dateStr = getLocalDateString(date);
+      const entry = journalEntries[dateStr];
+
+      // Reset values
+      entryTitle.value = '';
+      entryContent.value = '';
+      activeMood = '';
+      activeTags = [];
+
+      document.querySelectorAll('.mood-option').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'border-transparent');
+        btn.classList.add('bg-slate-800/40', 'text-gray-400', 'border-slate-800');
+      });
+      renderTags();
+
+      if (entry) {
+        entryTitle.value = entry.title || '';
+        entryContent.value = entry.content || '';
+
+        if (entry.mood) {
+          activeMood = entry.mood;
+          const moodBtn = moodPicker.querySelector(`[data-mood="${activeMood}"]`);
+          if (moodBtn) {
+            moodBtn.classList.add('bg-blue-600', 'text-white', 'border-transparent');
+            moodBtn.classList.remove('bg-slate-800/40', 'text-gray-400', 'border-slate-800');
+          }
+        }
+
+        activeTags = entry.tags || [];
+        renderTags();
+      }
+
+      updateWordCount();
+      autosaveIndicator.classList.add('opacity-0');
+    }
+
+    function saveActiveEntry(isAutosave = false) {
+      const title = entryTitle.value.trim();
+      const content = entryContent.value.trim();
+
+      // Don't save empty templates on autosave
+      if (isAutosave && !title && !content && !activeMood && activeTags.length === 0) return;
+
+      const dateStr = getLocalDateString(activeDate);
+
+      if (!title && !content) {
+        // If user cleared everything, delete entry from ledger
+        if (journalEntries[dateStr]) {
+          delete journalEntries[dateStr];
+          saveDb();
+          renderCalendar();
+          renderFeed();
+        }
+        return;
+      }
+
+      journalEntries[dateStr] = {
+        date: dateStr,
+        title: title || "Untitled reflection",
+        content: content,
+        mood: activeMood,
+        tags: activeTags
+      };
+
+      saveDb();
+      renderCalendar();
+      renderFeed();
+
+      if (isAutosave) {
+        autosaveIndicator.classList.remove('opacity-0');
+        setTimeout(() => {
+          autosaveIndicator.classList.add('opacity-0');
+        }, 1500);
+      } else {
+        alert("Journal entry saved successfully.");
+      }
+    }
+
+    function deleteActiveEntry() {
+      const dateStr = getLocalDateString(activeDate);
+      if (journalEntries[dateStr]) {
+        if (confirm("Delete this diary entry permanently?")) {
+          delete journalEntries[dateStr];
+          saveDb();
+          renderCalendar();
+          renderFeed();
+          loadEntry(activeDate);
+        }
+      } else {
+        alert("No entry exists for this day.");
+      }
+    }
+
+    // Auto-save scheduling engine
+    function triggerAutosave() {
+      if (autosaveTimeout) clearTimeout(autosaveTimeout);
+      autosaveTimeout = setTimeout(() => {
+        saveActiveEntry(true);
+      }, 1000);
+    }
+
+    // Entries Feed Search and Filters
+    function renderFeed() {
+      const query = searchInput.value.toLowerCase();
+      entriesList.innerHTML = '';
+
+      // Sort entries chronologically reverse
+      const sortedDates = Object.keys(journalEntries).sort((a, b) => new Date(b) - new Date(a));
+      let matchCount = 0;
+
+      sortedDates.forEach(dateStr => {
+        const entry = journalEntries[dateStr];
+
+        // Search filter checks
+        const matchesSearch = entry.title.toLowerCase().includes(query) ||
+          entry.content.toLowerCase().includes(query) ||
+          entry.tags.some(t => t.toLowerCase().includes(query));
+
+        if (matchesSearch) {
+          matchCount++;
+          const card = document.createElement('div');
+          card.className = `entry-card ${dateStr === getLocalDateString(activeDate) ? 'active-card' : ''}`;
+
+          const entryDate = new Date(dateStr);
+
+          let moodEmoji = '📝';
+          if (entry.mood === 'inspired') moodEmoji = '😊';
+          else if (entry.mood === 'calm') moodEmoji = '🍃';
+          else if (entry.mood === 'focus') moodEmoji = '🎯';
+          else if (entry.mood === 'fatigued') moodEmoji = '🥱';
+          else if (entry.mood === 'worried') moodEmoji = '😰';
+          else if (entry.mood === 'creative') moodEmoji = '🎨';
+
+          card.innerHTML = `
+            <div class="entry-card-header">
+              <span class="entry-card-date">${entryDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              <span class="entry-card-mood">${moodEmoji}</span>
+            </div>
+            <div class="entry-card-title">${escapeHTML(entry.title)}</div>
+            <div class="entry-card-snippet">${escapeHTML(entry.content || "Empty content")}</div>
+            <div class="entry-card-tags">
+              ${entry.tags.map(t => `<span class="entry-card-tag">${escapeHTML(t)}</span>`).join('')}
+            </div>
+          `;
+
+          card.addEventListener('click', () => {
+            selectDate(entryDate);
+          });
+
+          entriesList.appendChild(card);
+        }
+      });
+
+      if (matchCount === 0) {
+        entriesList.innerHTML = `
+          <div class="text-center py-10 text-xs text-gray-500 leading-relaxed border border-dashed border-slate-800 rounded-3xl p-5 bg-slate-900/10">
+            No diary logs found matching search.
+          </div>
+        `;
+      }
+    }
+
+    // Tag pills configuration
+    function renderTags() {
+      // Clear tag pills except input
+      const pills = tagsPillbox.querySelectorAll('.tag-pill');
+      pills.forEach(p => p.remove());
+
+      activeTags.forEach((tag, idx) => {
+        const pill = document.createElement('span');
+        pill.className = 'tag-pill px-2.5 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl text-xs font-semibold flex items-center gap-x-1.5';
+        pill.innerHTML = `
+          <span>${escapeHTML(tag)}</span>
+          <span class="tag-remove text-gray-450 hover:text-red-405 cursor-pointer font-bold" onclick="removeTag(${idx})">&times;</span>
+        `;
+        tagsPillbox.insertBefore(pill, tagInput);
+      });
+    }
+
+    function handleAddTag() {
+      const val = tagInput.value.trim();
+      if (val && !activeTags.includes(val)) {
+        activeTags.push(val);
+        tagInput.value = '';
+        renderTags();
+        triggerAutosave();
+      }
+    }
+
+    function removeTag(index) {
+      activeTags.splice(index, 1);
+      renderTags();
+      triggerAutosave();
+    }
+
+    // Metadata calculations wordcounts
+    function updateWordCount() {
+      const content = entryContent.value;
+      const characters = content.length;
+
+      // Compute words clean filter
+      const words = content.trim() === '' ? 0 : content.trim().split(/\s+/).length;
+      wordCounter.innerText = `${words} word${words !== 1 ? 's' : ''} / ${characters} character${characters !== 1 ? 's' : ''}`;
+    }
+
+    // Backup Export and Restore JSON operations
+    function exportBackupJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(journalEntries, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `ZenDiary_Backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importBackupJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        try {
+          const parsed = JSON.parse(evt.target.result);
+          if (parsed && typeof parsed === 'object') {
+            // Merge files or overwrite
+            if (confirm("Restore entries from backup? This will merge them with your current reflections.")) {
+              journalEntries = { ...journalEntries, ...parsed };
+              saveDb();
+              renderCalendar();
+              renderFeed();
+              loadEntry(activeDate);
+              alert("Backup restored successfully.");
+            }
+          } else {
+            alert("Invalid backup format.");
+          }
+        } catch (err) {
+          alert("Error parsing backup file.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // CSRF Token fetch helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    let syncTimeout = null;
+    function syncDiaryToDatabase() {
+      if (syncTimeout) clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => {
+        const csrftoken = getCookie('csrftoken');
+        fetch('/api/save_diary/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify(journalEntries)
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status !== 'success') {
+              console.error("Database diary synchronization failed:", data.message);
+            }
+          })
+          .catch(err => console.error("AJAX database diary post failed:", err));
+      }, 600);
+    }
+
+    // Storage utility wrappers
+    function saveDb() {
+      localStorage.setItem('zen_journal_db', JSON.stringify(journalEntries));
+      syncDiaryToDatabase();
+    }
+
+    function getLocalDateString(date) {
+      const offset = date.getTimezoneOffset();
+      const local = new Date(date.getTime() - (offset * 60 * 1000));
+      return local.toISOString().split('T')[0];
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g,
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-do </title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    :root {
+      --glass-blur: 20px;
+      --glass-saturate: 180%;
+    }
+
+    .tail-container {
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .logo-font {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Animated background glowing blobs */
+    .glass-bg-blobs {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.45;
+      mix-blend-mode: plus-lighter;
+      animation: float 25s infinite alternate ease-in-out;
+      transition: all 0.8s ease-in-out;
+    }
+
+    /* Dark mode blobs */
+    body:not(.light-mode) .blob-1 {
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
+      width: 600px;
+      height: 600px;
+      top: -10%;
+      left: 10%;
+      animation-duration: 20s;
+    }
+
+    body:not(.light-mode) .blob-2 {
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0) 70%);
+      width: 700px;
+      height: 700px;
+      bottom: -10%;
+      right: 15%;
+      animation-duration: 28s;
+      animation-delay: -5s;
+    }
+
+    body:not(.light-mode) .blob-3 {
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, rgba(14, 165, 233, 0) 70%);
+      width: 550px;
+      height: 550px;
+      top: 40%;
+      left: 50%;
+      animation-duration: 24s;
+      animation-delay: -10s;
+    }
+
+    /* Light mode blobs */
+    body.light-mode .blob-1 {
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0) 70%);
+      width: 700px;
+      height: 700px;
+      top: -5%;
+      left: 5%;
+      animation-duration: 22s;
+    }
+
+    body.light-mode .blob-2 {
+      background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0) 70%);
+      width: 800px;
+      height: 800px;
+      bottom: -5%;
+      right: 10%;
+      animation-duration: 32s;
+      animation-delay: -4s;
+    }
+
+    body.light-mode .blob-3 {
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0) 70%);
+      width: 600px;
+      height: 600px;
+      top: 35%;
+      left: 45%;
+      animation-duration: 26s;
+      animation-delay: -8s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0px, 0px) scale(1) rotate(0deg);
+      }
+
+      33% {
+        transform: translate(40px, -60px) scale(1.1) rotate(120deg);
+      }
+
+      66% {
+        transform: translate(-30px, 40px) scale(0.95) rotate(240deg);
+      }
+
+      100% {
+        transform: translate(0px, 0px) scale(1) rotate(360deg);
+      }
+    }
+
+    /* ── DARK THEME GLASS ── */
+    body:not(.light-mode) {
+      background: radial-gradient(circle at 50% 50%, #080b16 0%, #02040a 100%) !important;
+      color: #f3f4f6 !important;
+    }
+
+    body:not(.light-mode) .bg-slate-950 {
+      background-color: transparent !important;
+    }
+
+    body:not(.light-mode) .bg-slate-900 {
+      background: rgba(10, 15, 30, 0.55) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body:not(.light-mode) header.bg-slate-900 {
+      background: rgba(10, 15, 30, 0.3) !important;
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body:not(.light-mode) .bg-slate-900:not(.w-72):not(header) {
+      background: rgba(15, 23, 42, 0.4) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border: 1px solid rgba(255, 255, 255, 0.09) !important;
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+    }
+
+    body:not(.light-mode) .bg-slate-800 {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: #f3f4f6 !important;
+    }
+
+    body:not(.light-mode) .bg-slate-800:hover {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    body:not(.light-mode) .border-slate-800 {
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    body:not(.light-mode) .border-slate-700 {
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    body:not(.light-mode) input,
+    body:not(.light-mode) textarea,
+    body:not(.light-mode) select {
+      background: rgba(10, 15, 30, 0.4) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: #ffffff !important;
+      backdrop-filter: blur(10px);
+    }
+
+    body:not(.light-mode) input:focus,
+    body:not(.light-mode) textarea:focus,
+    body:not(.light-mode) select:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.25) !important;
+    }
+
+    /* ── LIGHT THEME GLASS ── */
+    body.light-mode {
+      background: radial-gradient(circle at 50% 50%, #f3f4f6 0%, #e2e8f0 100%) !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .bg-slate-950 {
+      background-color: transparent !important;
+    }
+
+    body.light-mode [class*="bg-slate-950/"] {
+      background-color: rgba(0, 0, 0, 0.02) !important;
+    }
+
+    body.light-mode .bg-slate-900,
+    body.light-mode [class*="bg-slate-900/"] {
+      background: rgba(255, 255, 255, 0.5) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border-color: rgba(0, 0, 0, 0.06) !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode header.bg-slate-900,
+    body.light-mode header[class*="bg-slate-900/"] {
+      background: rgba(255, 255, 255, 0.3) !important;
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border-color: rgba(0, 0, 0, 0.06) !important;
+    }
+
+    body.light-mode .bg-slate-900:not(.w-72):not(header),
+    body.light-mode [class*="bg-slate-900/"]:not(.w-72):not(header) {
+      background: rgba(255, 255, 255, 0.45) !important;
+      backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border: 1px solid rgba(255, 255, 255, 0.7) !important;
+      box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    }
+
+    body.light-mode .bg-slate-800,
+    body.light-mode [class*="bg-slate-800/"] {
+      background: rgba(0, 0, 0, 0.04) !important;
+      border: 1px solid rgba(0, 0, 0, 0.06) !important;
+      color: #0f172a !important;
+    }
+
+    body.light-mode .bg-slate-800:hover,
+    body.light-mode [class*="bg-slate-800/"]:hover {
+      background: rgba(0, 0, 0, 0.08) !important;
+      border-color: rgba(0, 0, 0, 0.12) !important;
+    }
+
+    body.light-mode .border-slate-800,
+    body.light-mode [class*="border-slate-800"] {
+      border-color: rgba(0, 0, 0, 0.06) !important;
+    }
+
+    body.light-mode .border-slate-700,
+    body.light-mode [class*="border-slate-700"] {
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    body.light-mode input,
+    body.light-mode textarea,
+    body.light-mode select {
+      background: rgba(255, 255, 255, 0.55) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      color: #0f172a !important;
+      backdrop-filter: blur(10px);
+    }
+
+    body.light-mode input:focus,
+    body.light-mode textarea:focus,
+    body.light-mode select:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.18) !important;
+    }
+
+    /* Text colors overrides */
+    body.light-mode .text-white {
+      color: #0f172a !important;
+    }
+
+    body.light-mode .text-gray-100,
+    body.light-mode .text-gray-200,
+    body.light-mode .text-gray-300 {
+      color: #1e293b !important;
+    }
+
+    body.light-mode .text-gray-400,
+    body.light-mode .text-gray-450,
+    body.light-mode .text-gray-500 {
+      color: #475569 !important;
+    }
+
+    body.light-mode .text-gray-600 {
+      color: #64748b !important;
+    }
+
+    body.light-mode [class*="hover:bg-slate-800"]:hover,
+    body.light-mode [class*="hover:bg-slate-700"]:hover,
+    body.light-mode [class*="hover:bg-slate-900"]:hover {
+      background-color: rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.light-mode [class*="hover:text-white"]:hover {
+      color: #0f172a !important;
+    }
+
+    body.light-mode [class*="hover:text-gray-100"]:hover,
+    body.light-mode [class*="hover:text-gray-200"]:hover,
+    body.light-mode [class*="hover:text-gray-300"]:hover {
+      color: #1e293b !important;
+    }
+
+    /* ── ACTIVE BUTTONS & CONTROLS GLASS ── */
+    .bg-blue-600 {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .bg-blue-600:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.45) !important;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+    }
+
+    body.light-mode .bg-blue-600 {
+      color: #ffffff !important;
+    }
+
+    body.light-mode #theme-label {
+      color: #1e293b !important;
+    }
+
+    /* toggle track & dot */
+    body:not(.light-mode) #theme-toggle-dot {
+      transform: translateX(0px);
+    }
+
+    body.light-mode #theme-toggle-dot {
+      transform: translateX(16px);
+    }
+
+    body.light-mode #theme-toggle-track {
+      background-color: #3b82f6 !important;
+    }
+
+    .category-item-btn {
+      transition: all 0.2s ease-in-out;
+    }
+
+    .category-item-btn.active-cat {
+      background: rgba(59, 130, 246, 0.15) !important;
+      border-color: rgba(59, 130, 246, 0.3) !important;
+      color: #3b82f6 !important;
+    }
+
+    body.light-mode .category-item-btn.active-cat {
+      background: rgba(59, 130, 246, 0.08) !important;
+    }
+
+    .task-row-card {
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      transition: all 0.2s ease;
+    }
+
+    body.light-mode .task-row-card {
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .task-row-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Custom Checkbox Styling */
+    .todo-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      display: inline-grid;
+      place-content: center;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.05);
+      flex-shrink: 0;
+    }
+
+    body.light-mode .todo-checkbox {
+      border-color: rgba(15, 23, 42, 0.25);
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .todo-checkbox:checked {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+      border-color: transparent !important;
+    }
+
+    .todo-checkbox:checked::before {
+      content: "\f00c";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      color: white;
+      font-size: 0.7rem;
+    }
+
+    /* custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.15);
+      border-radius: 99px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.35);
+    }
+  </style>
+</head>
+
+<body class="tail-container bg-slate-950 text-gray-100 min-h-screen relative overflow-hidden">
+  <!-- Animated background glowing blobs -->
+  <div class="glass-bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- MAIN APP STRUCTURE -->
+  <div class="flex h-screen overflow-hidden relative z-10">
+    <!-- SIDEBAR DRAWER OVERLAY (Mobile only) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()"
+      class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-all duration-300"></div>
+
+    <!-- SIDEBAR Navigation Menu -->
+    <div id="sidebar"
+      class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+
+      <div class="flex flex-col flex-1 overflow-y-auto">
+        <!-- Branding Header -->
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-x-3">
+            <div
+              class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/35">
+              <i class="fa-solid fa-square-check text-white text-xl animate-pulse"></i>
+            </div>
+            <div>
+              <h1 class="logo-font text-3xl font-semibold tracking-tighter text-white">To-do</h1>
+              <p class="text-xs text-gray-400 tracking-widest">PERSONAL OS</p>
+            </div>
+          </div>
+          <!-- Close button on mobile -->
+          <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white p-1 cursor-pointer">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="p-6 space-y-4">
+          <div class="space-y-1.5">
+            <a href="/"
+              class="flex items-center gap-x-3.5 px-4 py-2.5 rounded-xl cursor-pointer text-gray-400 hover:bg-slate-800/40 hover:text-white transition-all font-medium text-xs">
+              <i class="fa-solid fa-gauge text-sm text-gray-400"></i>
+              <span>Dashboard</span>
+            </a>
+          </div>
+
+          <!-- Categories Section (Moved under Dashboard link) -->
+          <div class="pt-4 border-t border-slate-800/60">
+            <div class="flex items-center justify-between mb-3 px-2">
+              <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Categories</h2>
+            </div>
+
+            <!-- Category Create Form -->
+            <div class="flex gap-2 mb-3 px-1 relative shrink-0">
+              <input id="new-cat-input" type="text" placeholder="New Category..."
+                class="flex-1 bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-xl py-1.5 px-3 text-xs outline-none transition-all placeholder-gray-500"
+                onkeypress="if(event.key==='Enter') createCategory()">
+              <button onclick="createCategory()"
+                class="bg-blue-600 hover:bg-blue-700 text-white w-8 h-8 rounded-xl flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                title="Add Category">
+                <i class="fa-solid fa-plus text-xs"></i>
+              </button>
+            </div>
+
+            <!-- Categories Dynamic Nav List -->
+            <div class="space-y-1" id="categories-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completion Stats Progress Widget -->
+      <div class="p-6 border-t border-slate-800 bg-slate-900/20">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Completion Rate</span>
+          <span class="text-xs font-bold text-blue-400" id="sidebar-progress-percent">0%</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5">
+          <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-500" id="sidebar-progress-bar"
+            style="width: 0%"></div>
+        </div>
+        <div class="mt-2 text-[10px] text-gray-500 text-center" id="sidebar-progress-tasks">0 / 0 completed</div>
+      </div>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT AREA -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- HEADER BAR -->
+      <header
+        class="bg-slate-900 border-b border-slate-800 px-4 md:px-8 py-5 flex items-center justify-between gap-x-4 shrink-0">
+        <div class="flex items-center gap-x-3 shrink-0">
+          <!-- Hamburger button (Mobile) -->
+          <button onclick="toggleSidebar()"
+            class="md:hidden text-gray-400 hover:text-white p-2 cursor-pointer focus:outline-none"
+            title="Open Menu / Categories">
+            <i class="fa-solid fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight logo-font"> Todo Workspace</h2>
+          <span
+            class="hidden sm:inline-block px-3 py-1 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/20 uppercase tracking-wider">
+            Active</span>
+        </div>
+
+        <!-- Right Theme Toggle -->
+        <div class="flex items-center gap-x-3 shrink-0">
+          <button id="theme-toggle-header"
+            class="flex items-center gap-x-2 bg-slate-900/40 hover:bg-slate-800 border border-slate-800 px-4 py-2 rounded-2xl text-xs font-semibold text-gray-400 hover:text-white transition-all cursor-pointer"
+            title="Toggle Dark/Light Mode">
+            <i class="fa-solid fa-moon text-amber-400" id="theme-icon"></i>
+            <span id="theme-label" class="font-medium text-gray-300 hidden sm:block">Dark Mode</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- WORKSPACE TASKS VIEWPORT -->
+      <div id="tasks-col" class="flex-1 bg-slate-900/10 backdrop-blur-sm flex flex-col overflow-hidden relative">
+
+        <!-- Tasks list header -->
+        <div
+          class="px-6 py-4 border-b border-slate-800/60 bg-slate-900/40 backdrop-blur flex items-center justify-between shrink-0 gap-x-4">
+          <div class="flex flex-col gap-y-0.5">
+            <h3 id="active-category-title" class="text-sm font-bold text-white leading-tight">Select a Category</h3>
+            <span id="active-category-stats" class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">0
+              tasks total</span>
+          </div>
+        </div>
+
+        <!-- Todo Add Input -->
+        <div id="tasks-actions-bar" class="p-6 pb-0 hidden">
+          <div class="flex gap-2">
+            <input id="new-todo-input" type="text" placeholder="Add a task to this category..."
+              class="flex-1 bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-xl py-2.5 px-4 text-xs outline-none transition-all placeholder-gray-500"
+              onkeypress="if(event.key==='Enter') createTodo()">
+            <button onclick="createTodo()"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+              <i class="fa-solid fa-plus text-xs"></i>
+              <span>Add Todo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Todos List Body -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+          <!-- Pending tasks -->
+          <div class="space-y-2">
+            <div id="pending-tasks-list" class="space-y-2">
+              <!-- Populated via Javascript -->
+            </div>
+          </div>
+
+          <!-- Completed tasks list divider & list -->
+          <div id="completed-tasks-divider" class="hidden">
+            <div class="flex items-center gap-2 px-1 py-2 border-t border-slate-800/40">
+              <span class="text-[9px] font-bold text-gray-505 uppercase tracking-widest">Completed Items</span>
+            </div>
+            <div id="completed-tasks-list" class="space-y-2">
+              <!-- Populated via Javascript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer status sync banner -->
+        <div
+          class="px-6 py-4 border-t border-slate-800/60 bg-slate-900/40 backdrop-blur flex items-center justify-between shrink-0">
+
+          <div id="autosave-indicator"
+            class="flex items-center gap-x-1.5 text-emerald-400 text-[10px] font-semibold opacity-0 transition-opacity duration-300">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Saved reflection</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMPLE EDIT TODO MODAL -->
+  <div id="edit-todo-modal"
+    class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl shadow-2xl p-6 relative"
+      onclick="event.stopPropagation()">
+      <button onclick="closeEditModal()"
+        class="absolute top-4 right-4 text-gray-400 hover:text-white cursor-pointer p-1">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <h3 class="text-lg font-bold text-white logo-font tracking-tight mb-4">Edit Task Title</h3>
+
+      <div class="space-y-4">
+        <input type="text" id="edit-todo-title-input"
+          class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-xl py-2.5 px-4 text-xs outline-none transition-all text-white"
+          placeholder="Task title..." onkeypress="if(event.key==='Enter') saveTodoEdit()">
+
+        <div class="flex items-center justify-end gap-x-2 pt-2 border-t border-slate-800/60">
+          <button onclick="closeEditModal()"
+            class="px-3.5 py-1.5 border border-slate-800 bg-slate-900/40 hover:bg-slate-800 rounded-lg text-xs font-semibold text-gray-400 hover:text-white transition-all cursor-pointer">
+            Cancel
+          </button>
+          <button onclick="saveTodoEdit()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg font-bold text-xs shadow-lg shadow-blue-500/20 cursor-pointer">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Django Injected Data -->
+  <script id="todos-data" type="application/json">{{ todos_json|safe }}</script>
+
+  <script>
+    // State storage engine
+    let todos = [];
+    let categories = [];
+    let activeCategory = '';
+    let editTaskId = null;
+    let isDarkMode = true;
+
+    // DOM Elements Cache
+    const categoriesList = document.getElementById('categories-list');
+    const newCatInput = document.getElementById('new-cat-input');
+    const activeCategoryTitle = document.getElementById('active-category-title');
+    const activeCategoryStats = document.getElementById('active-category-stats');
+
+    const tasksActionsBar = document.getElementById('tasks-actions-bar');
+    const newTodoInput = document.getElementById('new-todo-input');
+    const pendingTasksList = document.getElementById('pending-tasks-list');
+    const completedTasksList = document.getElementById('completed-tasks-list');
+    const completedTasksDivider = document.getElementById('completed-tasks-divider');
+    const autosaveIndicator = document.getElementById('autosave-indicator');
+
+    const editTodoModal = document.getElementById('edit-todo-modal');
+    const editTodoTitleInput = document.getElementById('edit-todo-title-input');
+    const themeToggleBtn = document.getElementById('theme-toggle-header');
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved database
+      try {
+        const todosDataElement = document.getElementById('todos-data');
+        todos = JSON.parse(todosDataElement.textContent);
+      } catch (e) {
+        console.warn("Failed to load todos from Django context, falling back to local storage:", e);
+        const savedDb = localStorage.getItem('zen_todo_db');
+        if (savedDb) {
+          try { todos = JSON.parse(savedDb); } catch (err) { todos = []; }
+        }
+      }
+
+      // Load Categories list
+      loadCategoriesState();
+
+      // Load Visual theme selection
+      const savedTheme = localStorage.getItem('expenseFlowTheme') || localStorage.getItem('journal_theme') || 'dark';
+      isDarkMode = savedTheme === 'dark';
+      applyTheme(isDarkMode);
+
+      // Event bindings
+      themeToggleBtn.addEventListener('click', toggleTheme);
+      editTodoModal.addEventListener('click', (e) => {
+        if (e.target === editTodoModal) closeEditModal();
+      });
+
+      // Initial renders
+      renderCategories();
+
+      // Auto-select first category if available
+      if (categories.length > 0) {
+        selectCategory(categories[0]);
+      } else {
+        renderTasks();
+      }
+    });
+
+    // Categories State management
+    function loadCategoriesState() {
+      // Get unique category names from loaded tasks
+      const loadedCats = new Set(todos.map(t => t.category).filter(Boolean));
+      // Read saved categories from LocalStorage
+      let savedCats = [];
+      try {
+        savedCats = JSON.parse(localStorage.getItem('zen_todo_categories')) || [];
+      } catch (e) {
+        savedCats = [];
+      }
+
+      // Merge and ensure we have some defaults
+      const merged = new Set(['Inbox', 'Work', 'Personal', ...savedCats, ...loadedCats]);
+      categories = Array.from(merged);
+      saveCategoriesState();
+    }
+
+    function saveCategoriesState() {
+      localStorage.setItem('zen_todo_categories', JSON.stringify(categories));
+    }
+
+    // Categories CRUD controllers
+    function renderCategories() {
+      categoriesList.innerHTML = '';
+
+      categories.forEach(cat => {
+        const count = todos.filter(t => t.category === cat).length;
+        const row = document.createElement('div');
+        row.className = `category-item-btn flex items-center justify-between p-3 rounded-xl border border-transparent cursor-pointer hover:bg-slate-800/40 text-xs font-semibold ${cat === activeCategory ? 'active-cat bg-blue-600/10 text-blue-400 border-blue-500/20' : 'text-gray-400'}`;
+
+        row.onclick = () => selectCategory(cat);
+
+        // Delete button for category (inbox is non-deletable default)
+        const isDeletable = cat.toLowerCase() !== 'inbox';
+        const delBtn = isDeletable ? `
+          <button onclick="event.stopPropagation(); deleteCategory('${escapeHTML(cat)}')"
+            class="text-gray-500 hover:text-red-400 p-1 transition-colors cursor-pointer shrink-0" title="Delete Category">
+            <i class="fa-solid fa-trash-can text-[10px]"></i>
+          </button>
+        ` : '';
+
+        row.innerHTML = `
+          <div class="flex items-center gap-2 truncate flex-1 min-w-0">
+            <i class="fa-solid fa-folder text-gray-500"></i>
+            <span class="truncate">${escapeHTML(cat)}</span>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="px-1.5 py-0.2 text-[9px] bg-slate-800 text-gray-505 rounded-full font-bold border border-slate-700/60">${count}</span>
+            ${delBtn}
+          </div>
+        `;
+
+        categoriesList.appendChild(row);
+      });
+    }
+
+    function createCategory() {
+      const val = newCatInput.value.trim();
+      if (!val) return;
+
+      if (categories.includes(val)) {
+        alert("Category already exists.");
+        return;
+      }
+
+      categories.push(val);
+      saveCategoriesState();
+      newCatInput.value = '';
+
+      renderCategories();
+      selectCategory(val);
+    }
+
+    function deleteCategory(cat) {
+      if (confirm(`Delete the category "${cat}" and all of its tasks permanently?`)) {
+        // Delete all tasks in category
+        todos = todos.filter(t => t.category !== cat);
+        // Delete category
+        categories = categories.filter(c => c !== cat);
+        saveCategoriesState();
+        saveDb();
+
+        renderCategories();
+
+        if (activeCategory === cat) {
+          activeCategory = categories[0] || '';
+        }
+
+        selectCategory(activeCategory);
+      }
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      renderCategories();
+      renderTasks();
+
+      // Close mobile sidebar drawer if it was opened
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Todos List Renderer
+    function renderTasks() {
+      pendingTasksList.innerHTML = '';
+      completedTasksList.innerHTML = '';
+      completedTasksDivider.classList.add('hidden');
+
+      if (!activeCategory) {
+        activeCategoryTitle.innerText = "Select a Category";
+        activeCategoryStats.innerText = "0 tasks total";
+        tasksActionsBar.classList.add('hidden');
+        return;
+      }
+
+      tasksActionsBar.classList.remove('hidden');
+      activeCategoryTitle.innerText = `${activeCategory} Tasks`;
+
+      // Filter tasks in active category
+      const catTasks = todos.filter(t => t.category === activeCategory);
+
+      // Update statistics
+      const totalCount = catTasks.length;
+      const completedCount = catTasks.filter(t => t.completed).length;
+      activeCategoryStats.innerText = `${completedCount} of ${totalCount} completed`;
+
+      const pending = catTasks.filter(t => !t.completed);
+      const completed = catTasks.filter(t => t.completed);
+
+      // Render Active
+      if (pending.length === 0) {
+        pendingTasksList.innerHTML = `
+          <div class="text-center py-10 text-xs text-gray-500 border border-dashed border-slate-800 rounded-2xl p-5 bg-slate-900/10">
+            No active todos inside this category. Type above to add.
+          </div>
+        `;
+      } else {
+        pending.forEach(t => {
+          pendingTasksList.appendChild(createTodoRowElement(t));
+        });
+      }
+
+      // Render Completed
+      if (completed.length > 0) {
+        completedTasksDivider.classList.remove('hidden');
+        completed.forEach(t => {
+          completedTasksList.appendChild(createTodoRowElement(t));
+        });
+      }
+    }
+
+    function createTodoRowElement(task) {
+      const row = document.createElement('div');
+      row.className = 'task-row-card p-3.5 flex items-center justify-between gap-4';
+
+      row.innerHTML = `
+        <div class="flex items-center gap-3 min-w-0 flex-1">
+          <input type="checkbox" class="todo-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTodoComplete('${task.id}')">
+          <span class="text-xs md:text-sm font-semibold text-white truncate ${task.completed ? 'line-through opacity-45' : ''}">${escapeHTML(task.title)}</span>
+        </div>
+
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick="openEditModal('${task.id}')"
+            class="p-2 rounded-lg hover:bg-slate-850 hover:text-white text-gray-400 cursor-pointer transition-colors shrink-0" title="Rename Task">
+            <i class="fa-solid fa-pen text-xs"></i>
+          </button>
+          <button onclick="deleteTodo('${task.id}')"
+            class="p-2 rounded-lg hover:bg-red-950/20 hover:text-red-400 text-gray-500 cursor-pointer transition-colors shrink-0" title="Delete Task">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        </div>
+      `;
+
+      return row;
+    }
+
+    // Todos CRUD actions
+    function createTodo() {
+      const val = newTodoInput.value.trim();
+      if (!val || !activeCategory) return;
+
+      const newTodo = {
+        id: `task_${Date.now()}`,
+        title: val,
+        description: '',
+        completed: false,
+        dueDate: '',
+        priority: 'medium',
+        category: activeCategory,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+
+      todos.unshift(newTodo);
+      newTodoInput.value = '';
+
+      saveDb();
+      renderCategories();
+      renderTasks();
+      updateStats();
+      showSyncIndicator();
+    }
+
+    function toggleTodoComplete(id) {
+      const task = todos.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        task.updatedAt = Date.now();
+
+        saveDb();
+        renderTasks();
+        updateStats();
+        showSyncIndicator();
+      }
+    }
+
+    function deleteTodo(id) {
+      if (confirm("Delete this todo task permanently?")) {
+        todos = todos.filter(t => t.id !== id);
+
+        saveDb();
+        renderCategories();
+        renderTasks();
+        updateStats();
+        showSyncIndicator();
+      }
+    }
+
+    // Edit Modal Actions
+    function openEditModal(id) {
+      const task = todos.find(t => t.id === id);
+      if (!task) return;
+
+      editTaskId = id;
+      editTodoTitleInput.value = task.title || '';
+      editTodoModal.classList.remove('hidden');
+      editTodoTitleInput.focus();
+    }
+
+    function closeEditModal() {
+      editTodoModal.classList.add('hidden');
+      editTaskId = null;
+    }
+
+    function saveTodoEdit() {
+      const title = editTodoTitleInput.value.trim();
+      if (!title) return;
+
+      const task = todos.find(t => t.id === editTaskId);
+      if (task) {
+        task.title = title;
+        task.updatedAt = Date.now();
+
+        saveDb();
+        renderTasks();
+        showSyncIndicator();
+      }
+
+      closeEditModal();
+    }
+
+    // Theme toggler methods
+    function applyTheme(dark) {
+      const body = document.body;
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      const label = document.getElementById('theme-label');
+
+      if (dark) {
+        body.classList.remove('light-mode');
+        html.classList.add('dark');
+        if (icon) { icon.className = 'fa-solid fa-moon text-amber-400'; }
+        if (label) { label.innerText = 'Dark Mode'; }
+      } else {
+        body.classList.add('light-mode');
+        html.classList.remove('dark');
+        if (icon) { icon.className = 'fa-solid fa-sun text-amber-400'; }
+        if (label) { label.innerText = 'Light Mode'; }
+      }
+    }
+
+    function toggleTheme() {
+      isDarkMode = !isDarkMode;
+      applyTheme(isDarkMode);
+      localStorage.setItem('expenseFlowTheme', isDarkMode ? 'dark' : 'light');
+      localStorage.setItem('journal_theme', isDarkMode ? 'dark' : 'light');
+    }
+
+    // Toggle Sidebar Menu Drawer
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    // Stats progress update
+    function updateStats() {
+      const total = todos.length;
+      const completed = todos.filter(t => t.completed).length;
+      const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+      document.getElementById('sidebar-progress-percent').innerText = `${progress}%`;
+      document.getElementById('sidebar-progress-bar').style.width = `${progress}%`;
+      document.getElementById('sidebar-progress-tasks').innerText = `${completed} / ${total} completed`;
+    }
+
+    // Cloud DB sync & LocalStorage save wrappers
+    function showSyncIndicator() {
+      autosaveIndicator.classList.remove('opacity-0');
+      setTimeout(() => {
+        autosaveIndicator.classList.add('opacity-0');
+      }, 1500);
+    }
+
+
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    let syncTimeout = null;
+    function syncTodosToDatabase() {
+      if (syncTimeout) clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => {
+        const csrftoken = getCookie('csrftoken');
+        fetch('/api/save_todos/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify(todos)
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status !== 'success') {
+              console.error("Database todo synchronization failed:", data.message);
+            }
+          })
+          .catch(err => console.error("AJAX database todo synchronization failed:", err));
+      }, 600);
+    }
+
+    function saveDb() {
+      localStorage.setItem('zen_todo_db', JSON.stringify(todos));
+      syncTodosToDatabase();
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g,
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+  </script>
+</body>
+
+</html>

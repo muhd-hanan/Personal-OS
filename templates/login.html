@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance OS — Unlock Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+        :root {
+            --glass-blur: 25px;
+            --glass-saturate: 180%;
+        }
+
+        .tail-container {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Ambient floating background blobs */
+        .glass-bg-blobs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.45;
+            mix-blend-mode: plus-lighter;
+            animation: float 25s infinite alternate ease-in-out;
+            transition: all 0.8s ease-in-out;
+        }
+
+        .blob-1 {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(99, 102, 241, 0) 70%);
+            width: 600px;
+            height: 600px;
+            top: -10%;
+            left: 10%;
+            animation-duration: 20s;
+        }
+
+        .blob-2 {
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%);
+            width: 700px;
+            height: 700px;
+            bottom: -10%;
+            right: 15%;
+            animation-duration: 28s;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+            33% { transform: translate(40px, -60px) scale(1.05) rotate(120deg); }
+            66% { transform: translate(-30px, 40px) scale(0.95) rotate(240deg); }
+            100% { transform: translate(0px, 0px) scale(1) rotate(360deg); }
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 50%, #080b16 0%, #02040a 100%) !important;
+            color: #f3f4f6 !important;
+        }
+
+        /* Glassmorphic card pop animation */
+        .glass-card {
+            background: rgba(15, 22, 38, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            animation: cardPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes cardPop {
+            0% { opacity: 0; transform: scale(0.9) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Tactile numpad keypress effects */
+        .key-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .key-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+        }
+        .key-btn:active {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            transform: scale(0.95);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Pass-code input field dots style */
+        .dot-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dot-indicator.filled {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            box-shadow: 0 0 12px #3b82f6;
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body class="tail-container min-h-screen relative flex items-center justify-center p-4 overflow-hidden select-none">
+    <!-- Glowing background mesh -->
+    <div class="glass-bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="glass-card w-full max-w-sm rounded-3xl p-8 z-10 text-center flex flex-col items-center">
+        <!-- Logo Icon -->
+        <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/35 mb-4 border border-white/10">
+            <i class="fa-solid fa-lock text-white text-3xl"></i>
+        </div>
+        <h1 class="logo-font text-3xl font-semibold tracking-tight text-white">Finance OS</h1>
+        <p class="text-xs text-gray-400 tracking-widest uppercase mt-1">Unlock Console Access</p>
+
+        <!-- Django error output -->
+        {% if error %}
+        <div class="mt-4 px-4 py-2.5 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-medium flex items-center gap-x-2 animate-bounce">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Passcode Display Panel -->
+        <form id="passcode-form" method="POST" class="w-full mt-6 space-y-6">
+            {% csrf_token %}
+            <!-- Hidden input field that accepts only numeric input -->
+            <input type="password" name="password" id="password-input" autocomplete="off" required
+                   pattern="[0-9]*" inputmode="numeric" maxlength="8"
+                   class="sr-only">
+
+            <!-- Custom Dot Indicators representing passcode character entry -->
+            <div class="flex justify-center gap-x-4 py-2" id="dots-container">
+                <div class="dot-indicator"></div>
+                <div class="dot-indicator"></div>
+                <div class="dot-indicator"></div>
+                <div class="dot-indicator"></div>
+                <div class="dot-indicator"></div>
+                <div class="dot-indicator"></div>
+                <div class="dot-indicator"></div>
+                <div class="dot-indicator"></div>
+            </div>
+
+            <!-- Custom Styled Tactile Keyboard Numpad -->
+            <div class="grid grid-cols-3 gap-3 w-full max-w-[240px] mx-auto pt-2">
+                <button type="button" onclick="pressKey('1')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">1</button>
+                <button type="button" onclick="pressKey('2')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">2</button>
+                <button type="button" onclick="pressKey('3')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">3</button>
+
+                <button type="button" onclick="pressKey('4')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">4</button>
+                <button type="button" onclick="pressKey('5')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">5</button>
+                <button type="button" onclick="pressKey('6')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">6</button>
+
+                <button type="button" onclick="pressKey('7')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">7</button>
+                <button type="button" onclick="pressKey('8')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">8</button>
+                <button type="button" onclick="pressKey('9')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">9</button>
+
+                <button type="button" onclick="clearKeys()" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-medium text-xs text-red-400 hover:text-red-300">CLEAR</button>
+                <button type="button" onclick="pressKey('0')" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-lg text-white">0</button>
+                <button type="button" onclick="backspaceKey()" class="key-btn w-14 h-14 rounded-full flex items-center justify-center font-semibold text-white">
+                    <i class="fa-solid fa-delete-left text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Submit trigger -->
+            <button type="submit" class="w-full py-4 mt-4 bg-blue-600 hover:bg-blue-700 transition-all rounded-2xl font-semibold text-sm shadow-lg shadow-blue-500/35 border border-white/10 hover:translate-y-[-2px] active:translate-y-0">
+                Unlock OS Console
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const inputField = document.getElementById('password-input');
+        const dots = document.querySelectorAll('.dot-indicator');
+        const form = document.getElementById('passcode-form');
+
+        // Focus the hidden field so standard keyboard input works too
+        document.addEventListener('click', () => {
+            inputField.focus();
+        });
+
+        // Trigger focus initially
+        window.addEventListener('DOMContentLoaded', () => {
+            inputField.focus();
+            updateDots();
+        });
+
+        // Intercept physical keyboard entries to filter numeric only
+        inputField.addEventListener('input', (e) => {
+            const val = inputField.value.replace(/[^0-9]/g, '');
+            if (inputField.value !== val) {
+                inputField.value = val;
+            }
+            updateDots();
+        });
+
+        // Keep field focused when blurred
+        inputField.addEventListener('blur', () => {
+            setTimeout(() => inputField.focus(), 10);
+        });
+
+        // Update active dots visual status
+        function updateDots() {
+            const len = inputField.value.length;
+            dots.forEach((dot, idx) => {
+                if (idx < len) {
+                    dot.filled = true;
+                    dot.classList.add('filled');
+                } else {
+                    dot.filled = false;
+                    dot.classList.remove('filled');
+                }
+            });
+        }
+
+        // Tactile key controllers
+        function pressKey(num) {
+            if (inputField.value.length < 8) {
+                inputField.value += num;
+                updateDots();
+            }
+        }
+
+        // Clear all input
+        function clearKeys() {
+            inputField.value = '';
+            updateDots();
+        }
+
+        // Delete last character
+        function backspaceKey() {
+            inputField.value = inputField.value.slice(0, -1);
+            updateDots();
+        }
+
+        // Catch form submit keypress
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                form.submit();
+            }
+        });
+    </script>
+</body>
+</html>

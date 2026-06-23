@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+
+        :root {
+            --primary: 234 179 8;
+        }
+
+        .tail-container {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+
+        .logo-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .modal {
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .entry-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .entry-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+
+        .amount-positive {
+            color: #4ade80;
+        }
+
+        .amount-negative {
+            color: #f87171;
+        }
+
+        .table-row {
+            transition: background-color 0.15s ease;
+        }
+
+        /* ── LIQUID GLASS SYSTEM & THEME OVERRIDES ── */
+        :root {
+            --glass-blur: 20px;
+            --glass-saturate: 180%;
+        }
+
+        /* Animated background glowing blobs */
+        .glass-bg-blobs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.45;
+            mix-blend-mode: plus-lighter;
+            animation: float 25s infinite alternate ease-in-out;
+            transition: all 0.8s ease-in-out;
+        }
+
+        /* Dark mode blobs: vibrant cyan, violet, indigo */
+        body:not(.light-mode) .blob-1 {
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
+            width: 600px;
+            height: 600px;
+            top: -10%;
+            left: 10%;
+            animation-duration: 20s;
+        }
+
+        body:not(.light-mode) .blob-2 {
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(168, 85, 247, 0) 70%);
+            width: 700px;
+            height: 700px;
+            bottom: -10%;
+            right: 15%;
+            animation-duration: 28s;
+            animation-delay: -5s;
+        }
+
+        body:not(.light-mode) .blob-3 {
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.3) 0%, rgba(14, 165, 233, 0) 70%);
+            width: 550px;
+            height: 550px;
+            top: 40%;
+            left: 50%;
+            animation-duration: 24s;
+            animation-delay: -10s;
+        }
+
+        /* Light mode blobs: soft pastel blue, pink, peach */
+        body.light-mode .blob-1 {
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0) 70%);
+            width: 700px;
+            height: 700px;
+            top: -5%;
+            left: 5%;
+            animation-duration: 22s;
+        }
+
+        body.light-mode .blob-2 {
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0) 70%);
+            width: 800px;
+            height: 800px;
+            bottom: -5%;
+            right: 10%;
+            animation-duration: 32s;
+            animation-delay: -4s;
+        }
+
+        body.light-mode .blob-3 {
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0) 70%);
+            width: 600px;
+            height: 600px;
+            top: 35%;
+            left: 45%;
+            animation-duration: 26s;
+            animation-delay: -8s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0px, 0px) scale(1) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(40px, -60px) scale(1.1) rotate(120deg);
+            }
+
+            66% {
+                transform: translate(-30px, 40px) scale(0.95) rotate(240deg);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1) rotate(360deg);
+            }
+        }
+
+        /* ── DARK THEME GLASS ── */
+        body:not(.light-mode) {
+            background: radial-gradient(circle at 50% 50%, #080b16 0%, #02040a 100%) !important;
+            color: #f3f4f6 !important;
+        }
+
+        body:not(.light-mode) .bg-slate-950 {
+            background-color: transparent !important;
+        }
+
+        body:not(.light-mode) .bg-slate-900 {
+            background: rgba(10, 15, 30, 0.5) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) header.bg-slate-900 {
+            background: rgba(10, 15, 30, 0.3) !important;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) .bg-slate-900:not(.w-72):not(header) {
+            background: rgba(15, 23, 42, 0.4) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border: 1px solid rgba(255, 255, 255, 0.09) !important;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        body:not(.light-mode) .bg-slate-800 {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #f3f4f6 !important;
+        }
+
+        body:not(.light-mode) .bg-slate-800:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        body:not(.light-mode) .border-slate-800 {
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) .border-slate-700 {
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+
+        body:not(.light-mode) input,
+        body:not(.light-mode) textarea {
+            background: rgba(10, 15, 30, 0.4) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+            backdrop-filter: blur(10px);
+        }
+
+        body:not(.light-mode) input:focus,
+        body:not(.light-mode) textarea:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.25) !important;
+        }
+
+        body:not(.light-mode) .amount-positive {
+            color: #34d399 !important;
+        }
+
+        body:not(.light-mode) .amount-negative {
+            color: #f87171 !important;
+        }
+
+        /* ── LIGHT THEME GLASS ── */
+        body.light-mode {
+            background: radial-gradient(circle at 50% 50%, #f3f4f6 0%, #e2e8f0 100%) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .bg-slate-950 {
+            background-color: transparent !important;
+        }
+
+        body.light-mode .bg-slate-900 {
+            background: rgba(255, 255, 255, 0.5) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border-color: rgba(0, 0, 0, 0.06) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode header.bg-slate-900 {
+            background: rgba(255, 255, 255, 0.3) !important;
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.light-mode .bg-slate-900:not(.w-72):not(header) {
+            background: rgba(255, 255, 255, 0.45) !important;
+            backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+            border: 1px solid rgba(255, 255, 255, 0.7) !important;
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        body.light-mode .bg-slate-800 {
+            background: rgba(0, 0, 0, 0.04) !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .bg-slate-800:hover {
+            background: rgba(0, 0, 0, 0.08) !important;
+            border-color: rgba(0, 0, 0, 0.12) !important;
+        }
+
+        body.light-mode .border-slate-800 {
+            border-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.light-mode .border-slate-700 {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+
+        body.light-mode input,
+        body.light-mode textarea {
+            background: rgba(255, 255, 255, 0.55) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            color: #0f172a !important;
+            backdrop-filter: blur(10px);
+        }
+
+        body.light-mode input:focus,
+        body.light-mode textarea:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.18) !important;
+        }
+
+        body.light-mode .text-white {
+            color: #0f172a !important;
+        }
+
+        body.light-mode .text-gray-100 {
+            color: #1e293b !important;
+        }
+
+        body.light-mode .text-gray-400 {
+            color: #475569 !important;
+        }
+
+        body.light-mode .amount-positive {
+            color: #059669 !important;
+        }
+
+        body.light-mode .amount-negative {
+            color: #dc2626 !important;
+        }
+
+        /* ── ACTIVE BUTTONS & CONTROLS GLASS ── */
+        body:not(.light-mode) .sidebar-link.bg-blue-600 {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.75) 0%, rgba(37, 99, 235, 0.75) 100%) !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        body.light-mode .sidebar-link.bg-blue-600 {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff !important;
+        }
+
+        body.light-mode .sidebar-link.bg-blue-600 i,
+        body.light-mode .sidebar-link.bg-blue-600 span {
+            color: #ffffff !important;
+        }
+
+        /* Premium CTA Buttons */
+        .bg-blue-600 {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .bg-blue-600:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.45) !important;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+        }
+
+        body.light-mode .bg-blue-600 {
+            color: #ffffff !important;
+        }
+
+        /* ── MODALS GLASSMORPHISM ── */
+        .modal {
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+        }
+
+        body:not(.light-mode) .modal {
+            background: rgba(15, 22, 38, 0.65) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        body.light-mode .modal {
+            background: rgba(255, 255, 255, 0.75) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            color: #0f172a !important;
+        }
+
+        body.light-mode .modal h3,
+        body.light-mode .modal label {
+            color: #0f172a !important;
+        }
+
+        /* Active Modal Type Buttons */
+        body:not(.light-mode) #type-income.bg-emerald-600 {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.8) 0%, rgba(5, 150, 105, 0.8) 100%) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body:not(.light-mode) #type-expense.bg-red-500 {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.8) 0%, rgba(220, 38, 38, 0.8) 100%) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.light-mode #type-income.bg-emerald-600 {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            color: #ffffff !important;
+        }
+
+        body.light-mode #type-expense.bg-red-500 {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+            color: #ffffff !important;
+        }
+
+        /* toggle dot position */
+        body:not(.light-mode) #theme-toggle-dot {
+            transform: translateX(0px);
+        }
+
+        body.light-mode #theme-toggle-dot {
+            transform: translateX(16px);
+        }
+
+        body.light-mode #theme-toggle-track {
+            background-color: #3b82f6 !important;
+        }
+
+        /* ── DYNAMIC ELEMENTS & ROW HOVER GLASS ── */
+        body:not(.light-mode) .hover\:bg-slate-800\/70:hover {
+            background-color: rgba(255, 255, 255, 0.04) !important;
+        }
+
+        body.light-mode .hover\:bg-slate-800\/70:hover {
+            background-color: rgba(0, 0, 0, 0.03) !important;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.03) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        body:not(.light-mode) .filter-btn {
+            color: #9ca3af !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        body:not(.light-mode) .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+        }
+
+        body.light-mode .filter-btn {
+            color: #475569 !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            background: rgba(0, 0, 0, 0.02) !important;
+        }
+
+        body.light-mode .filter-btn:hover {
+            background: rgba(0, 0, 0, 0.06) !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
+            color: #0f172a !important;
+        }
+    </style>
+</head>
+
+<body class="tail-container bg-slate-950 text-gray-100 min-h-screen relative">
+    <!-- Animated background glowing blobs -->
+    <div class="glass-bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    <div class="flex h-screen overflow-hidden relative z-10">
+        <!-- SIDEBAR OVERLAY -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()"
+            class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden transition-all duration-300"></div>
+
+        <!-- SIDEBAR -->
+        <div id="sidebar"
+            class="fixed inset-y-0 left-0 z-40 w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+            <!-- Logo & Title -->
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center">
+                        <i class="fa-solid fa-arrow-trend-up text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="logo-font text-3xl font-semibold tracking-tighter text-white">ExpenseFlow</h1>
+                        <p class="text-xs text-gray-400 tracking-widest">FINANCE OS</p>
+                    </div>
+                </div>
+                <!-- Close button on mobile -->
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white p-1 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Sidebar Navigation Menu -->
+            <div class="p-6 flex-1 overflow-auto space-y-6">
+                <!-- Redirect to Dashboard -->
+                <div class="space-y-1">
+                    <a href="/"
+                        class="flex items-center justify-center gap-x-2 bg-slate-800 hover:bg-slate-700 px-4 py-3 rounded-2xl text-sm font-medium transition-colors border border-slate-700/60 text-blue-400">
+                        <i class="fa-solid fa-gauge"></i>
+                        <span>Go to Dashboard</span>
+                    </a>
+
+                </div>
+
+                <!-- Trackers Section -->
+                <div class="pt-4 border-t border-slate-800/60">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-widest px-4">Trackers</h2>
+                        <button onclick="showNewTrackerModal()"
+                            class="flex items-center gap-x-1.5 text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl text-blue-400 transition-colors">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>New</span>
+                        </button>
+                    </div>
+
+                    <div id="tracker-list" class="space-y-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="p-6 border-t border-slate-800 space-y-3 shrink-0">
+                <!-- Theme Toggle -->
+                <button onclick="toggleTheme()"
+                    class="w-full flex items-center justify-between bg-slate-800 hover:bg-slate-700 px-4 py-3 rounded-2xl text-sm transition-all border border-slate-700/60">
+                    <div class="flex items-center gap-x-3">
+                        <i class="fa-solid fa-moon text-amber-400" id="theme-icon"></i>
+                        <span id="theme-label" class="font-medium text-gray-200">Dark Mode</span>
+                    </div>
+                    <div id="theme-toggle-track" class="w-9 h-5 bg-slate-700 rounded-full relative transition-colors">
+                        <div id="theme-toggle-dot"
+                            class="w-4 h-4 bg-white rounded-full absolute top-0.5 left-0.5 transition-all"></div>
+                    </div>
+                </button>
+
+                <!-- Export Button -->
+                <button onclick="exportCSV()"
+                    class="w-full flex items-center justify-center gap-x-2 bg-slate-800 hover:bg-slate-700 px-4 py-3 rounded-2xl text-sm font-medium transition-colors border border-slate-700/60 text-gray-200">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Export CSV</span>
+                </button>
+
+                <!-- Delete Current Tracker -->
+                <button onclick="deleteCurrentTracker()"
+                    class="w-full flex items-center justify-center gap-x-2 text-red-400 hover:bg-red-950/30 px-4 py-3 rounded-2xl text-sm font-medium transition-colors border border-red-900/30">
+                    <i class="fa-solid fa-trash"></i>
+                    <span>Delete Tracker</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- HEADER -->
+            <header
+                class="bg-slate-900 border-b border-slate-800 px-4 md:px-8 py-5 flex items-center justify-between gap-x-4">
+                <div class="flex items-center gap-x-3 shrink-0">
+                    <!-- Hamburger menu button -->
+                    <button onclick="toggleSidebar()"
+                        class="md:hidden text-gray-400 hover:text-white p-2 cursor-pointer focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h2 id="current-tracker-name" class="text-xl md:text-2xl font-semibold text-white">Personal</h2>
+                    <span id="tracker-status"
+                        class="hidden sm:inline-block px-3 py-1 text-xs font-medium bg-emerald-500/10 text-emerald-400 rounded-2xl">Active</span>
+                </div>
+
+                <div class="flex-1 max-w-md hidden md:block">
+                    <div class="relative">
+                        <input id="search-input" onkeyup="filterEntries()" type="text"
+                            placeholder="Search description, remarks, or amount..."
+                            class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-3xl py-3 px-5 pl-12 text-sm outline-none transition-all">
+                        <div class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-x-3 shrink-0">
+                    <button onclick="showNewEntryModal()"
+                        class="flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 transition-colors text-white px-4 md:px-6 py-2.5 md:py-3 rounded-3xl font-medium text-xs md:text-sm shadow-lg shadow-blue-500/30">
+                        <i class="fa-solid fa-plus text-sm"></i>
+                        <span class="hidden sm:inline">New Entry</span>
+                        <span class="sm:hidden">New</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE CONTAINER FOR MAIN CONTENTS -->
+            <div class="flex-1 overflow-y-auto bg-slate-950 flex flex-col">
+                <!-- MOBILE SEARCH BAR (visible on mobile only) -->
+                <div class="px-4 py-3 bg-slate-950 border-b border-slate-800/60 md:hidden shrink-0">
+                    <div class="relative">
+                        <input id="search-input-mobile" onkeyup="filterEntriesMobile()" type="text"
+                            placeholder="Search description, remarks, or amount..."
+                            class="w-full bg-slate-800 border border-slate-700 focus:border-blue-500 rounded-3xl py-2.5 px-4 pl-11 text-xs outline-none transition-all">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- SUMMARY CARDS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 p-4 md:p-8 bg-slate-950 shrink-0"
+                    id="summary-cards">
+                    <!-- Populated by JS -->
+                </div>
+                <!-- EXPENSE SNAPSHOT CARD -->
+                <div class="px-4 md:px-8 pt-4 md:pt-8 mb-5 bg-slate-950 shrink-0">
+                    <div
+                        class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-6 dashboard-card flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <h3 class="text-sm font-semibold uppercase tracking-widest text-gray-400">Expense
+                                        Snapshot</h3>
+                                    <p class="text-xs text-gray-500">Overview of recent monthly analytics</p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 max-w-full">
+                                    <!-- Dynamic Category Pills -->
+                                    <div class="flex items-center gap-1.5 bg-slate-950/40 p-1 rounded-xl border border-slate-800/80 overflow-x-auto max-w-xs sm:max-w-md"
+                                        id="category-filter-pills">
+                                        <!-- Dynamic pill buttons injected by JS -->
+                                    </div>
+
+                                    <!-- Graph Range Selector -->
+                                    <div class="flex items-center gap-1.5 shrink-0">
+                                        <span
+                                            class="hidden sm:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">Range:</span>
+                                        <select id="graph-range-select" onchange="changeGraphRange(this.value)"
+                                            class="bg-slate-800 border border-slate-700 text-gray-300 focus:border-blue-500 rounded-xl py-1.5 px-3 text-[11px] outline-none transition-all cursor-pointer">
+                                            <option value="this-month">This Month</option>
+                                            <option value="6-months" selected>Last 6 Months</option>
+                                            <option value="this-year">This Year</option>
+                                            <option value="3-years">3 Years</option>
+                                            <option value="all">All</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Graph Style Selector -->
+                                    <div class="flex items-center gap-1.5 shrink-0">
+                                        <span
+                                            class="hidden sm:inline text-[10px] font-bold text-gray-500 uppercase tracking-wider">Style:</span>
+                                        <select id="graph-style-select" onchange="changeGraphStyle(this.value)"
+                                            class="bg-slate-800 border border-slate-700 text-gray-300 focus:border-blue-500 rounded-xl py-1.5 px-3 text-[11px] outline-none transition-all cursor-pointer">
+                                            <option value="mixed">Mixed (Bar + Line)</option>
+                                            <option value="bar">Bar Chart</option>
+                                            <option value="line">Line Chart</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Real Expense Chart (Chart.js) -->
+                            <div
+                                class="h-48 w-full relative overflow-hidden mt-6 mb-2 rounded-2xl bg-slate-950/20 border border-slate-800/40 p-2">
+                                <canvas id="expense-chart" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILTERS -->
+                <div class="px-4 md:px-8 pb-4 bg-slate-950 border-b border-slate-800 shrink-0">
+                    <div class="flex items-center gap-2 flex-wrap" id="filter-buttons">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- ENTRIES CONTAINER -->
+                <div class="px-4 md:px-8 py-4 md:py-6 bg-slate-950 flex-1" id="entries-container">
+                    <!-- Responsive Table View -->
+                    <div
+                        class="bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 overflow-x-auto w-full shadow-sm">
+                        <table class="w-full min-w-[500px] sm:min-w-full">
+                            <thead>
+                                <tr class="border-b border-slate-800 bg-slate-950">
+                                    <th
+                                        class="text-left py-4 px-4 md:py-5 md:px-8 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Date</th>
+                                    <th
+                                        class="text-left py-4 px-4 md:py-5 md:px-8 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Description</th>
+                                    <th
+                                        class="text-left py-4 px-4 md:py-5 md:px-8 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Type</th>
+                                    <th
+                                        class="text-right py-4 px-4 md:py-5 md:px-8 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Amount</th>
+                                    <th
+                                        class="hidden sm:table-cell text-left py-4 px-4 md:py-5 md:px-8 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                        Remarks</th>
+                                    <th class="w-20 py-4 px-4 md:py-5 md:px-8"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="entries-table-body" class="divide-y divide-slate-800 text-sm">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENTRY MODAL -->
+    <div id="entry-modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center">
+        <div class="modal bg-slate-900 w-full max-w-lg mx-4 rounded-3xl border border-slate-700 shadow-2xl">
+            <div class="px-8 pt-8 pb-6">
+                <h3 id="modal-title" class="text-2xl font-semibold mb-8">New Entry</h3>
+
+                <form id="entry-form" onsubmit="handleEntrySubmit(event)">
+                    <input type="hidden" id="entry-id">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-2">DATE</label>
+                            <input type="date" id="entry-date" required
+                                class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-2">TYPE</label>
+                            <div class="flex rounded-2xl overflow-hidden border border-slate-700">
+                                <button type="button" onclick="setEntryType('income')" id="type-income"
+                                    class="flex-1 py-4 text-sm font-medium transition-colors">INCOME</button>
+                                <button type="button" onclick="setEntryType('expense')" id="type-expense"
+                                    class="flex-1 py-4 text-sm font-medium transition-colors">EXPENSE</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 sm:mt-6">
+                        <label class="block text-xs text-gray-400 mb-2">DESCRIPTION</label>
+                        <input type="text" id="entry-description" required placeholder="Salary, Grocery, etc."
+                            class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-2">AMOUNT</label>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">₹</span>
+                                <input type="number" id="entry-amount" required step="0.01" placeholder="0.00"
+                                    class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-10 py-4 text-sm focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-2">REMARKS</label>
+                            <input type="text" id="entry-remarks" placeholder="Optional"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-x-4 mt-10">
+                        <button type="button" onclick="hideEntryModal()"
+                            class="flex-1 py-4 text-sm font-medium border border-slate-700 hover:bg-slate-800 rounded-3xl transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="flex-1 py-4 text-sm font-semibold bg-blue-600 hover:bg-blue-700 rounded-3xl transition-colors">
+                            Save Entry
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEW TRACKER MODAL -->
+    <div id="new-tracker-modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center">
+        <div class="modal bg-slate-900 w-full max-w-md mx-4 rounded-3xl border border-slate-700 shadow-2xl">
+            <div class="p-8">
+                <h3 class="text-2xl font-semibold mb-6">Create New Tracker</h3>
+
+                <div class="mb-6">
+                    <label class="block text-xs text-gray-400 mb-2">TRACKER NAME</label>
+                    <input id="new-tracker-name" type="text" placeholder="Vacation Fund"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div class="flex gap-x-4">
+                    <button onclick="hideNewTrackerModal()"
+                        class="flex-1 py-4 border border-slate-700 rounded-3xl hover:bg-slate-800 transition-colors">
+                        Cancel
+                    </button>
+                    <button onclick="createNewTracker()"
+                        class="flex-1 py-4 bg-blue-600 hover:bg-blue-700 rounded-3xl transition-colors font-medium">
+                        Create Tracker
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- DELETE CONFIRMATION MODAL -->
+    <div id="delete-confirm-modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center">
+        <div class="modal bg-slate-900 w-full max-w-sm mx-4 rounded-3xl border border-slate-700 shadow-2xl p-8">
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto bg-red-500/10 rounded-2xl flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Delete Entry?</h3>
+                <p class="text-gray-400 text-sm mb-8">This action cannot be undone.</p>
+
+                <div class="flex gap-x-4">
+                    <button onclick="hideDeleteModal()"
+                        class="flex-1 py-4 border border-slate-700 rounded-3xl hover:bg-slate-800">Cancel</button>
+                    <button onclick="confirmDelete()" class="flex-1 py-4 bg-red-600 hover:bg-red-700 rounded-3xl">Yes,
+                        Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Django Injected Data -->
+    <script id="trackers-data" type="application/json">{{ trackers_json|safe }}</script>
+    <!-- Reliable CSRF token injected directly from Django -->
+    <script>const CSRF_TOKEN = '{{ csrf_token }}';</script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Data Structure
+        let currentTrackerId = 'personal';
+        let trackers = {};
+        let currentFilter = 'this-month';  // Default to current month
+        let currentSearchTerm = '';
+        let editingEntryId = null;
+        let entryToDelete = null;
+        let customRangeStart = null;
+        let customRangeEnd = null;
+        let currentGraphRange = '6-months';
+
+        // Chart.js State and Constants
+        let expenseChartInstance = null;
+        let currentGraphStyle = 'mixed';
+
+        function getChartDataForRange(range, entries) {
+            let labels = [];
+            let keys = [];
+            let incomes = [];
+            let expenses = [];
+            
+            const today = new Date();
+            const todayYear = today.getFullYear();
+            const todayMonth = today.getMonth(); // 0-based
+            
+            if (range === 'this-month') {
+                // Daily breakdown of the current month
+                const daysInMonth = new Date(todayYear, todayMonth + 1, 0).getDate();
+                
+                for (let d = 1; d <= daysInMonth; d++) {
+                    labels.push(d.toString());
+                    const mm = (todayMonth + 1).toString().padStart(2, '0');
+                    const dd = d.toString().padStart(2, '0');
+                    keys.push(`${todayYear}-${mm}-${dd}`);
+                }
+                
+                const dailyExpenses = {};
+                const dailyIncomes = {};
+                keys.forEach(k => {
+                    dailyExpenses[k] = 0;
+                    dailyIncomes[k] = 0;
+                });
+                
+                entries.forEach(e => {
+                    if (e.date in dailyExpenses) {
+                        const amt = parseFloat(e.amount) || 0;
+                        if (e.type === 'expense') {
+                            dailyExpenses[e.date] += amt;
+                        } else if (e.type === 'income') {
+                            dailyIncomes[e.date] += amt;
+                        }
+                    }
+                });
+                
+                incomes = keys.map(k => dailyIncomes[k]);
+                expenses = keys.map(k => dailyExpenses[k]);
+                
+            } else if (range === '6-months') {
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                for (let i = 5; i >= 0; i--) {
+                    const d = new Date(todayYear, todayMonth - i, 1);
+                    const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+                    keys.push(key);
+                    labels.push(monthNames[d.getMonth()]);
+                }
+                
+                const monthlyExpenses = {};
+                const monthlyIncomes = {};
+                keys.forEach(k => {
+                    monthlyExpenses[k] = 0;
+                    monthlyIncomes[k] = 0;
+                });
+                
+                entries.forEach(e => {
+                    const k = getEntryMonthKey(e.date);
+                    if (k && k in monthlyExpenses) {
+                        const amt = parseFloat(e.amount) || 0;
+                        if (e.type === 'expense') {
+                            monthlyExpenses[k] += amt;
+                        } else if (e.type === 'income') {
+                            monthlyIncomes[k] += amt;
+                        }
+                    }
+                });
+                
+                incomes = keys.map(k => monthlyIncomes[k]);
+                expenses = keys.map(k => monthlyExpenses[k]);
+                
+            } else if (range === 'this-year') {
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                for (let m = 0; m < 12; m++) {
+                    const key = `${monthNames[m]} ${todayYear}`;
+                    keys.push(key);
+                    labels.push(monthNames[m]);
+                }
+                
+                const monthlyExpenses = {};
+                const monthlyIncomes = {};
+                keys.forEach(k => {
+                    monthlyExpenses[k] = 0;
+                    monthlyIncomes[k] = 0;
+                });
+                
+                entries.forEach(e => {
+                    const k = getEntryMonthKey(e.date);
+                    if (k && k in monthlyExpenses) {
+                        const amt = parseFloat(e.amount) || 0;
+                        if (e.type === 'expense') {
+                            monthlyExpenses[k] += amt;
+                        } else if (e.type === 'income') {
+                            monthlyIncomes[k] += amt;
+                        }
+                    }
+                });
+                
+                incomes = keys.map(k => monthlyIncomes[k]);
+                expenses = keys.map(k => monthlyExpenses[k]);
+                
+            } else if (range === '3-years') {
+                for (let i = 2; i >= 0; i--) {
+                    const yr = todayYear - i;
+                    keys.push(yr.toString());
+                    labels.push(yr.toString());
+                }
+                
+                const yearlyExpenses = {};
+                const yearlyIncomes = {};
+                keys.forEach(k => {
+                    yearlyExpenses[k] = 0;
+                    yearlyIncomes[k] = 0;
+                });
+                
+                entries.forEach(e => {
+                    const parts = e.date.split('-');
+                    if (parts.length > 0) {
+                        const yr = parts[0];
+                        if (yr in yearlyExpenses) {
+                            const amt = parseFloat(e.amount) || 0;
+                            if (e.type === 'expense') {
+                                yearlyExpenses[yr] += amt;
+                            } else if (e.type === 'income') {
+                                yearlyIncomes[yr] += amt;
+                            }
+                        }
+                    }
+                });
+                
+                incomes = keys.map(k => yearlyIncomes[k]);
+                expenses = keys.map(k => yearlyExpenses[k]);
+                
+            } else if (range === 'all') {
+                const yearsSet = new Set();
+                entries.forEach(e => {
+                    const parts = e.date.split('-');
+                    if (parts.length > 0) {
+                        yearsSet.add(parts[0]);
+                    }
+                });
+                yearsSet.add(todayYear.toString());
+                
+                const sortedYears = Array.from(yearsSet).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+                keys = sortedYears;
+                labels = sortedYears;
+                
+                const yearlyExpenses = {};
+                const yearlyIncomes = {};
+                keys.forEach(k => {
+                    yearlyExpenses[k] = 0;
+                    yearlyIncomes[k] = 0;
+                });
+                
+                entries.forEach(e => {
+                    const parts = e.date.split('-');
+                    if (parts.length > 0) {
+                        const yr = parts[0];
+                        if (yr in yearlyExpenses) {
+                            const amt = parseFloat(e.amount) || 0;
+                            if (e.type === 'expense') {
+                                yearlyExpenses[yr] += amt;
+                            } else if (e.type === 'income') {
+                                yearlyIncomes[yr] += amt;
+                            }
+                        }
+                    }
+                });
+                
+                incomes = keys.map(k => yearlyIncomes[k]);
+                expenses = keys.map(k => yearlyExpenses[k]);
+            }
+            
+            return { labels, incomes, expenses };
+        }
+
+        // ── Toast Notification ────────────────────────────────────────────────
+        function showToast(message, type = 'error') {
+            const existing = document.getElementById('app-toast');
+            if (existing) existing.remove();
+            const colors = type === 'success'
+                ? 'bg-emerald-600 border-emerald-500'
+                : 'bg-red-600 border-red-500';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+            const toast = document.createElement('div');
+            toast.id = 'app-toast';
+            toast.className = `fixed bottom-6 right-6 z-[9999] flex items-center gap-x-3 px-5 py-4 rounded-2xl border shadow-2xl text-white text-sm font-medium ${colors} transition-all`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Default trackers fallback — only used if DB+localStorage both empty
+        function initializeDefaultTrackers() {
+            // Already populated from DB — do not override
+        }
+
+        async function migrateLocalStorageToDb() {
+            const oldData = localStorage.getItem('expenseFlowData');
+            if (!oldData) return;
+            const migrated = localStorage.getItem('expenseFlowMigrated');
+            if (migrated) return;
+            try {
+                const parsed = JSON.parse(oldData);
+                if (!parsed || Object.keys(parsed).length === 0) return;
+                const response = await fetch('/api/save_data/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+                    body: JSON.stringify(parsed)
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    localStorage.setItem('expenseFlowMigrated', '1');
+                    localStorage.removeItem('expenseFlowData');
+                    showToast('Old data migrated to database!', 'success');
+                    setTimeout(() => window.location.reload(), 1500);
+                }
+            } catch (e) { console.warn('Migration failed:', e); }
+        }
+
+        function loadData() {
+            try {
+                // Parse directly from Django injected safe JSON
+                const trackersDataElement = document.getElementById('trackers-data');
+                const parsed = JSON.parse(trackersDataElement.textContent);
+                if (parsed && Object.keys(parsed).length > 0) {
+                    trackers = parsed;
+                } else {
+                    // DB returned empty — use in-memory placeholder until user creates trackers
+                    trackers = { 'personal': { name: 'Personal', entries: [] } };
+                }
+            } catch (e) {
+                console.warn("Failed to load trackers from Django context:", e);
+                trackers = { 'personal': { name: 'Personal', entries: [] } };
+            }
+
+            // Restore last active tracker from localStorage if still valid
+            const savedTrackerId = localStorage.getItem('expenseFlowCurrentTrackerId');
+            if (savedTrackerId && trackers[savedTrackerId]) {
+                currentTrackerId = savedTrackerId;
+            } else {
+                currentTrackerId = Object.keys(trackers)[0] || 'personal';
+            }
+
+            // Default to this-month so the snapshot cards show current month data
+            currentFilter = 'this-month';
+
+            const savedRangeStart = localStorage.getItem('expenseFlowCustomRangeStart');
+            const savedRangeEnd = localStorage.getItem('expenseFlowCustomRangeEnd');
+            if (savedRangeStart) customRangeStart = savedRangeStart;
+            if (savedRangeEnd) customRangeEnd = savedRangeEnd;
+
+            const savedSearchTerm = localStorage.getItem('expenseFlowCurrentSearchTerm');
+            if (savedSearchTerm) {
+                currentSearchTerm = savedSearchTerm;
+                setTimeout(() => {
+                    const desktopInput = document.getElementById('search-input');
+                    const mobileInput = document.getElementById('search-input-mobile');
+                    if (desktopInput) desktopInput.value = savedSearchTerm;
+                    if (mobileInput) mobileInput.value = savedSearchTerm;
+                }, 50);
+            }
+        }
+
+        // Deprecated bulk save in favor of view CRUD APIs
+        async function saveData() {
+            // Keep empty to prevent any potential legacy calls from throwing error
+        }
+
+        // Render trackers in sidebar
+        function renderTrackers() {
+            const container = document.getElementById('tracker-list');
+            container.innerHTML = '';
+
+            Object.keys(trackers).forEach(key => {
+                const tracker = trackers[key];
+                const isActive = key === currentTrackerId;
+
+                const div = document.createElement('div');
+                div.className = `px-5 py-3.5 rounded-2xl flex items-center justify-between cursor-pointer sidebar-link ${isActive ? 'bg-blue-600 text-white' : 'hover:bg-slate-800'}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-x-3">
+                        <i class="fa-solid fa-wallet ${isActive ? 'text-white' : 'text-gray-400'}"></i>
+                        <span class="font-medium">${tracker.name}</span>
+                    </div>
+                    ${isActive ? `<span class="text-xs bg-blue-500/30 px-2.5 py-0.5 rounded-xl">active</span>` : ''}
+                `;
+                div.onclick = () => switchTracker(key);
+                container.appendChild(div);
+            });
+        }
+
+        function switchTracker(id) {
+            currentTrackerId = id;
+            localStorage.setItem('expenseFlowCurrentTrackerId', id);
+            renderAll();
+        }
+
+        function showNewTrackerModal() {
+            document.getElementById('new-tracker-modal').classList.remove('hidden');
+            document.getElementById('new-tracker-name').focus();
+        }
+
+        function hideNewTrackerModal() {
+            document.getElementById('new-tracker-modal').classList.add('hidden');
+        }
+
+        async function createNewTracker() {
+            const nameInput = document.getElementById('new-tracker-name');
+            const name = nameInput.value.trim();
+            if (!name) return;
+            try {
+                const response = await fetch('/api/tracker/create/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+                    body: JSON.stringify({ name })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    localStorage.setItem('expenseFlowCurrentTrackerId', result.tracker_id);
+                    hideNewTrackerModal();
+                    nameInput.value = '';
+                    window.location.reload();
+                } else { showToast('Error: ' + result.message); }
+            } catch (e) { showToast('Failed to create tracker. Network error.'); }
+        }
+
+        async function deleteCurrentTracker() {
+            if (Object.keys(trackers).length <= 1) {
+                showToast('You need at least one tracker.');
+                return;
+            }
+            if (confirm(`Delete "${trackers[currentTrackerId].name}" tracker and all its entries?`)) {
+                try {
+                    const response = await fetch('/api/tracker/delete/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+                        body: JSON.stringify({ tracker_id: currentTrackerId })
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        const remainingIds = Object.keys(trackers).filter(id => id !== currentTrackerId);
+                        localStorage.setItem('expenseFlowCurrentTrackerId', remainingIds[0]);
+                        window.location.reload();
+                    } else { showToast('Error: ' + result.message); }
+                } catch (e) { showToast('Failed to delete tracker. Network error.'); }
+            }
+        }
+
+        // Summary Cards
+        function getFilterLabel() {
+            if (currentFilter === 'today') return 'Today';
+            if (currentFilter === 'this-week') return 'This Week';
+            if (currentFilter === 'this-month') return 'This Month';
+            if (currentFilter === 'this-year') return 'This Year';
+            if (currentFilter === 'all') return 'All Time';
+            if (currentFilter === 'custom' && customRangeStart && customRangeEnd) {
+                return `${customRangeStart} → ${customRangeEnd}`;
+            }
+            return 'Selected';
+        }
+
+        function renderCards() {
+            const container = document.getElementById('summary-cards');
+            container.innerHTML = '';
+
+            const entries = getFilteredEntries();
+            let totalBalance = 0;
+            let filteredIncome = 0;
+            let filteredExpense = 0;
+
+            entries.forEach(entry => {
+                const amount = parseFloat(entry.amount);
+                if (entry.type === 'income') {
+                    filteredIncome += amount;
+                    totalBalance += amount;
+                } else {
+                    filteredExpense += amount;
+                    totalBalance -= amount;
+                }
+            });
+
+            const label = getFilterLabel();
+
+            const cards = [
+                {
+                    title: "Balance",
+                    value: `₹${totalBalance.toLocaleString('en-IN')}`,
+                    color: totalBalance >= 0 ? "text-emerald-400" : "text-red-400",
+                    icon: "fa-solid fa-wallet"
+                },
+                {
+                    title: "Total Entries",
+                    value: entries.length,
+                    color: "text-blue-400",
+                    icon: "fa-solid fa-list"
+                },
+                {
+                    title: `${label} Income`,
+                    value: `₹${filteredIncome.toLocaleString('en-IN')}`,
+                    color: "text-emerald-400",
+                    icon: "fa-solid fa-arrow-trend-up"
+                },
+                {
+                    title: `${label} Expense`,
+                    value: `₹${filteredExpense.toLocaleString('en-IN')}`,
+                    color: "text-red-400",
+                    icon: "fa-solid fa-arrow-trend-down"
+                }
+            ];
+
+            cards.forEach(card => {
+                const div = document.createElement('div');
+                div.className = `bg-slate-900 border border-slate-800 rounded-3xl p-6 hover:-translate-y-1 transition-all duration-300`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest text-gray-400">${card.title}</div>
+                            <div class="mt-3 text-3xl font-semibold ${card.color}">${card.value}</div>
+                        </div>
+                        <div class="w-11 h-11 bg-slate-800 rounded-2xl flex items-center justify-center text-xl">
+                            <i class="${card.icon}"></i>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function getFilteredEntries() {
+            let entries = [];
+            if (currentTrackerId === 'all') {
+                Object.keys(trackers).forEach(key => {
+                    entries = entries.concat(trackers[key].entries || []);
+                });
+            } else if (trackers[currentTrackerId]) {
+                entries = (trackers[currentTrackerId].entries || []).slice();
+            } else {
+                return [];
+            }
+
+            // Apply search
+            if (currentSearchTerm) {
+                const term = currentSearchTerm.toLowerCase();
+                entries = entries.filter(e =>
+                    (e.description && e.description.toLowerCase().includes(term)) ||
+                    (e.remarks && e.remarks.toLowerCase().includes(term)) ||
+                    (e.amount !== undefined && String(e.amount).toLowerCase().includes(term))
+                );
+            }
+
+            // Apply filter
+            const now = new Date();
+
+            if (currentFilter === 'today') {
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const todayStr = `${year}-${month}-${day}`;
+                entries = entries.filter(e => e.date === todayStr);
+            }
+            else if (currentFilter === 'this-week') {
+                const startOfWeek = new Date(now);
+                startOfWeek.setDate(now.getDate() - now.getDay());
+                startOfWeek.setHours(0, 0, 0, 0);
+                entries = entries.filter(e => {
+                    const [y, m, d] = e.date.split('-').map(Number);
+                    const entryDate = new Date(y, m - 1, d);
+                    return entryDate >= startOfWeek;
+                });
+            }
+            else if (currentFilter === 'this-month') {
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                entries = entries.filter(e => {
+                    const [y, m, d] = e.date.split('-').map(Number);
+                    return (m - 1) === currentMonth && y === currentYear;
+                });
+            }
+            else if (currentFilter === 'this-year') {
+                const currentYear = now.getFullYear();
+                entries = entries.filter(e => {
+                    const [y, m, d] = e.date.split('-').map(Number);
+                    return y === currentYear;
+                });
+            }
+            else if (currentFilter === 'custom' && customRangeStart && customRangeEnd) {
+                const [sY, sM, sD] = customRangeStart.split('-').map(Number);
+                const [eY, eM, eD] = customRangeEnd.split('-').map(Number);
+                const start = new Date(sY, sM - 1, sD, 0, 0, 0, 0);
+                const end = new Date(eY, eM - 1, eD, 23, 59, 59, 999);
+                entries = entries.filter(e => {
+                    const [y, m, d] = e.date.split('-').map(Number);
+                    const entryDate = new Date(y, m - 1, d);
+                    return entryDate >= start && entryDate <= end;
+                });
+            }
+            // 'all' filter: no additional filtering
+
+            // Sort by date descending
+            entries.sort((a, b) => {
+                const [aY, aM, aD] = a.date.split('-').map(Number);
+                const [bY, bM, bD] = b.date.split('-').map(Number);
+                return new Date(bY, bM - 1, bD) - new Date(aY, aM - 1, aD);
+            });
+
+            return entries;
+        }
+
+        function renderEntries() {
+            const tbody = document.getElementById('entries-table-body');
+            tbody.innerHTML = '';
+
+            const entries = getFilteredEntries();
+
+            if (entries.length === 0) {
+                // Table empty state
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="py-20 text-center">
+                        <div class="flex flex-col items-center justify-center text-gray-400">
+                            <i class="fa-solid fa-receipt text-6xl mb-6 opacity-30"></i>
+                            <p class="text-lg">No entries found</p>
+                            <p class="text-sm mt-1">Add your first transaction</p>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+                return;
+            }
+
+            entries.forEach(entry => {
+                const amountClass = entry.type === 'income' ? 'amount-positive' : 'amount-negative';
+
+                // Render Table Row
+                const row = document.createElement('tr');
+                row.className = `table-row border-b border-slate-800 last:border-none hover:bg-slate-800/70`;
+
+                const typeBadge = entry.type === 'income'
+                    ? `<span class="inline-block px-3 py-1 text-xs font-medium bg-emerald-500/10 text-emerald-400 rounded-2xl">Income</span>`
+                    : `<span class="inline-block px-3 py-1 text-xs font-medium bg-red-500/10 text-red-400 rounded-2xl">Expense</span>`;
+
+                row.innerHTML = `
+                    <td class="py-4 px-4 md:py-6 md:px-8 text-sm">${formatDate(entry.date)}</td>
+                    <td class="py-4 px-4 md:py-6 md:px-8 font-medium">${entry.description}</td>
+                    <td class="py-4 px-4 md:py-6 md:px-8">${typeBadge}</td>
+                    <td class="py-4 px-4 md:py-6 md:px-8 text-right font-semibold ${amountClass}">₹${parseFloat(entry.amount).toLocaleString('en-IN')}</td>
+                    <td class="hidden sm:table-cell py-4 px-4 md:py-6 md:px-8 text-sm text-gray-400">${entry.remarks || '-'}</td>
+                    <td class="py-4 px-4 md:py-6 md:px-8">
+                        <div class="flex gap-x-3 justify-end">
+                            <button onclick="editEntry('${entry.id}')" class="text-blue-400 hover:text-blue-300">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="promptDeleteEntry('${entry.id}')" class="text-red-400 hover:text-red-300">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function formatDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            return date.toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function renderFilterButtons() {
+            const container = document.getElementById('filter-buttons');
+            const isCustomActive = currentFilter === 'custom';
+            const customLabel = (customRangeStart && customRangeEnd)
+                ? `${customRangeStart} → ${customRangeEnd}`
+                : 'Custom Range';
+
+            container.innerHTML = `
+                <button onclick="setFilter('all')" id="filter-all" class="filter-btn px-6 py-2 text-sm rounded-3xl border border-slate-700 hover:border-slate-600 transition-all">All</button>
+                <button onclick="setFilter('today')" id="filter-today" class="filter-btn px-6 py-2 text-sm rounded-3xl border border-slate-700 hover:border-slate-600 transition-all">Today</button>
+                <button onclick="setFilter('this-week')" id="filter-this-week" class="filter-btn px-6 py-2 text-sm rounded-3xl border border-slate-700 hover:border-slate-600 transition-all">This Week</button>
+                <button onclick="setFilter('this-month')" id="filter-this-month" class="filter-btn px-6 py-2 text-sm rounded-3xl border border-slate-700 hover:border-slate-600 transition-all">This Month</button>
+                <button onclick="setFilter('this-year')" id="filter-this-year" class="filter-btn px-6 py-2 text-sm rounded-3xl border border-slate-700 hover:border-slate-600 transition-all">This Year</button>
+                <button onclick="toggleCustomRangePanel()" id="filter-custom" class="filter-btn px-6 py-2 text-sm rounded-3xl border border-slate-700 hover:border-slate-600 transition-all flex items-center gap-x-1.5">
+                    <i class="fa-solid fa-calendar-days text-xs"></i>
+                    <span>${isCustomActive ? customLabel : 'Custom Range'}</span>
+                </button>
+                <button onclick="resetFilter()" class="px-6 py-2 text-sm text-gray-400 hover:text-white transition-colors">Reset</button>
+
+                <div id="custom-range-panel" class="${isCustomActive ? '' : 'hidden'} w-full mt-3 flex items-center gap-x-3 flex-wrap gap-y-2">
+                    <div class="flex items-center gap-x-2">
+                        <label class="text-xs text-gray-400 uppercase tracking-wider">From</label>
+                        <input type="date" id="custom-start" value="${customRangeStart || ''}"
+                            class="bg-slate-800 border border-slate-700 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                        <label class="text-xs text-gray-400 uppercase tracking-wider">To</label>
+                        <input type="date" id="custom-end" value="${customRangeEnd || ''}"
+                            class="bg-slate-800 border border-slate-700 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                    </div>
+                    <button onclick="applyCustomRange()"
+                        class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-sm rounded-2xl font-medium transition-colors">
+                        Apply
+                    </button>
+                    <button onclick="clearCustomRange()"
+                        class="px-5 py-2 text-sm text-gray-400 hover:text-white transition-colors">
+                        Clear
+                    </button>
+                </div>
+            `;
+
+            // Mark active button
+            const activeId = currentFilter === 'custom' ? 'filter-custom' : `filter-${currentFilter}`;
+            const activeBtn = document.getElementById(activeId);
+            if (activeBtn) activeBtn.classList.add('!bg-blue-600', '!border-blue-600', '!text-white');
+        }
+
+        function toggleCustomRangePanel() {
+            const panel = document.getElementById('custom-range-panel');
+            if (panel) panel.classList.toggle('hidden');
+            // Mark the custom button active visually
+            const btn = document.getElementById('filter-custom');
+            if (btn) btn.classList.toggle('!bg-blue-600');
+        }
+
+        function applyCustomRange() {
+            const start = document.getElementById('custom-start').value;
+            const end = document.getElementById('custom-end').value;
+
+            if (!start || !end) {
+                alert('Please select both From and To dates.');
+                return;
+            }
+            if (new Date(start) > new Date(end)) {
+                alert('"From" date cannot be after "To" date.');
+                return;
+            }
+
+            customRangeStart = start;
+            customRangeEnd = end;
+            currentFilter = 'custom';
+            localStorage.setItem('expenseFlowCurrentFilter', 'custom');
+            localStorage.setItem('expenseFlowCustomRangeStart', start);
+            localStorage.setItem('expenseFlowCustomRangeEnd', end);
+            renderFilterButtons();
+            renderEntries();
+            renderCards();
+        }
+
+        function clearCustomRange() {
+            customRangeStart = null;
+            customRangeEnd = null;
+            localStorage.removeItem('expenseFlowCustomRangeStart');
+            localStorage.removeItem('expenseFlowCustomRangeEnd');
+            currentFilter = 'this-month';
+            localStorage.setItem('expenseFlowCurrentFilter', 'this-month');
+            renderFilterButtons();
+            renderEntries();
+            renderCards();
+        }
+
+        function setFilter(filter) {
+            if (filter !== 'custom') {
+                // Hide custom panel when switching away
+                customRangeStart = null;
+                customRangeEnd = null;
+                localStorage.removeItem('expenseFlowCustomRangeStart');
+                localStorage.removeItem('expenseFlowCustomRangeEnd');
+            }
+            currentFilter = filter;
+            localStorage.setItem('expenseFlowCurrentFilter', filter);
+            renderFilterButtons();
+            renderEntries();
+            renderCards();
+        }
+
+        function resetFilter() {
+            currentFilter = 'this-month';
+            customRangeStart = null;
+            customRangeEnd = null;
+            localStorage.setItem('expenseFlowCurrentFilter', 'this-month');
+            localStorage.removeItem('expenseFlowCustomRangeStart');
+            localStorage.removeItem('expenseFlowCustomRangeEnd');
+            renderFilterButtons();
+            renderEntries();
+            renderCards();
+        }
+
+        function filterEntries() {
+            currentSearchTerm = document.getElementById('search-input').value.trim();
+            localStorage.setItem('expenseFlowCurrentSearchTerm', currentSearchTerm);
+            renderEntries();
+        }
+
+        // Entry CRUD
+        function showNewEntryModal() {
+            editingEntryId = null;
+            document.getElementById('modal-title').textContent = 'New Entry';
+            document.getElementById('entry-form').reset();
+            document.getElementById('entry-date').value = new Date().toISOString().split('T')[0];
+            setEntryType('expense');
+            document.getElementById('entry-modal').classList.remove('hidden');
+        }
+
+        function hideEntryModal() {
+            document.getElementById('entry-modal').classList.add('hidden');
+        }
+
+        function setEntryType(type) {
+            const incomeBtn = document.getElementById('type-income');
+            const expenseBtn = document.getElementById('type-expense');
+
+            // Reset both buttons to inactive state
+            incomeBtn.className = 'flex-1 py-4 text-sm font-medium transition-colors';
+            expenseBtn.className = 'flex-1 py-4 text-sm font-medium transition-colors';
+
+            // Highlight only the selected one
+            if (type === 'income') {
+                incomeBtn.classList.add('bg-emerald-600', 'text-white');
+            } else {
+                expenseBtn.classList.add('bg-red-500', 'text-white');
+            }
+
+            // Store selected type
+            window.selectedEntryType = type;
+        }
+
+        async function handleEntrySubmit(e) {
+            e.preventDefault();
+
+            const date = document.getElementById('entry-date').value;
+            const description = document.getElementById('entry-description').value.trim();
+            const amount = parseFloat(document.getElementById('entry-amount').value);
+            const remarks = document.getElementById('entry-remarks').value.trim();
+            const type = window.selectedEntryType || 'expense';
+
+            if (!date || !description || isNaN(amount) || amount <= 0) {
+                showToast('Please fill in date, description and a valid amount.');
+                return;
+            }
+
+            const isEdit = !!editingEntryId;
+            const entryId = editingEntryId || ('entry_' + Date.now());
+
+            const entryData = {
+                id: isEdit ? editingEntryId : null,
+                date: date,
+                type: type,
+                description: description,
+                amount: amount,
+                remarks: remarks,
+                tracker_id: currentTrackerId
+            };
+
+            // Show loading state on button
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) { submitBtn.textContent = 'Saving...'; submitBtn.disabled = true; }
+
+            try {
+                const response = await fetch('/api/entry/save/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': CSRF_TOKEN
+                    },
+                    body: JSON.stringify(entryData)
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`Server error ${response.status}: ${text.substring(0, 200)}`);
+                }
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    // Update in-memory data immediately so table shows new entry right away
+                    const savedId = result.entry_id || entryId;
+                    const newEntry = { id: savedId, date, type, description, amount, remarks };
+                    const tracker = trackers[currentTrackerId];
+                    if (!tracker.entries) tracker.entries = [];
+
+                    if (isEdit) {
+                        // Replace existing entry
+                        const idx = tracker.entries.findIndex(x => x.id === editingEntryId);
+                        if (idx >= 0) tracker.entries[idx] = newEntry;
+                        else tracker.entries.push(newEntry);
+                    } else {
+                        tracker.entries.push(newEntry);
+                    }
+
+                    hideEntryModal();
+                    renderAll();
+                    showToast(isEdit ? 'Entry updated!' : 'Entry saved!', 'success');
+                } else {
+                    if (submitBtn) { submitBtn.textContent = originalText; submitBtn.disabled = false; }
+                    showToast('Save failed: ' + result.message);
+                }
+            } catch (err) {
+                console.error('Save entry error:', err);
+                if (submitBtn) { submitBtn.textContent = originalText; submitBtn.disabled = false; }
+                showToast('Failed to save entry: ' + err.message);
+            }
+        }
+
+        function editEntry(id) {
+            const entries = trackers[currentTrackerId].entries;
+            const entry = entries.find(e => e.id === id);
+            if (!entry) return;
+
+            editingEntryId = id;
+            document.getElementById('modal-title').textContent = 'Edit Entry';
+
+            document.getElementById('entry-id').value = entry.id;
+            document.getElementById('entry-date').value = entry.date;
+            document.getElementById('entry-description').value = entry.description;
+            document.getElementById('entry-amount').value = entry.amount;
+            document.getElementById('entry-remarks').value = entry.remarks || '';
+
+            setEntryType(entry.type);
+
+            document.getElementById('entry-modal').classList.remove('hidden');
+        }
+
+        function promptDeleteEntry(id) {
+            entryToDelete = id;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        }
+
+        function hideDeleteModal() {
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+        }
+
+        async function confirmDelete() {
+            if (!entryToDelete) return;
+
+            const deleteBtn = document.querySelector('#delete-confirm-modal button.bg-red-600');
+            if (deleteBtn) { deleteBtn.textContent = 'Deleting...'; deleteBtn.disabled = true; }
+
+            try {
+                const response = await fetch('/api/entry/delete/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': CSRF_TOKEN
+                    },
+                    body: JSON.stringify({ entry_id: entryToDelete })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    // Remove from in-memory data immediately
+                    const tracker = trackers[currentTrackerId];
+                    if (tracker && tracker.entries) {
+                        tracker.entries = tracker.entries.filter(e => e.id !== entryToDelete);
+                    }
+                    hideDeleteModal();
+                    entryToDelete = null;
+                    renderAll();
+                    showToast('Entry deleted.', 'success');
+                } else {
+                    if (deleteBtn) { deleteBtn.textContent = 'Yes, Delete'; deleteBtn.disabled = false; }
+                    showToast('Delete failed: ' + result.message);
+                }
+            } catch (err) {
+                console.error('Delete error:', err);
+                if (deleteBtn) { deleteBtn.textContent = 'Yes, Delete'; deleteBtn.disabled = false; }
+                showToast('Failed to delete: ' + err.message);
+            }
+        }
+
+
+
+        // Export CSV
+        function exportCSV() {
+            const entries = getFilteredEntries();
+            const tracker = trackers[currentTrackerId];
+            const label = getFilterLabel();
+
+            if (entries.length === 0) {
+                alert("No entries to export for the current filter.");
+                return;
+            }
+
+            // Calculate summary from filtered entries
+            let totalIncome = 0, totalExpense = 0;
+            entries.forEach(e => {
+                const amt = parseFloat(e.amount);
+                if (e.type === 'income') totalIncome += amt;
+                else totalExpense += amt;
+            });
+            const balance = totalIncome - totalExpense;
+
+            // Format date nicely: DD MMM YYYY timezone-safely
+            function fmtDate(dateStr) {
+                const [year, month, day] = dateStr.split('-').map(Number);
+                const d = new Date(year, month - 1, day);
+                return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            }
+
+            const exportedOn = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            // Build CSV
+            let csvContent = '';
+
+            // Summary header block
+            csvContent += `"ExpenseFlow - Export Report"\n`;
+            csvContent += `"Tracker","${tracker.name}"\n`;
+            csvContent += `"Filter","${label}"\n`;
+            csvContent += `"Exported On","${exportedOn}"\n`;
+            csvContent += `"Total Entries","${entries.length}"\n`;
+            csvContent += `\n`;
+            csvContent += `"--- Summary ---"\n`;
+            csvContent += `"Income","₹${totalIncome.toLocaleString('en-IN')}"\n`;
+            csvContent += `"Expense","₹${totalExpense.toLocaleString('en-IN')}"\n`;
+            csvContent += `"Balance","₹${balance.toLocaleString('en-IN')}"\n`;
+            csvContent += `\n`;
+
+            // Data table header
+            csvContent += `"Date","Type","Description","Amount (₹)","Remarks"\n`;
+
+            // Rows
+            entries.forEach(entry => {
+                const safeDesc = entry.description.replace(/"/g, '""');
+                const safeRemarks = (entry.remarks || '').replace(/"/g, '""');
+                const formattedDate = fmtDate(entry.date);
+                const type = entry.type.charAt(0).toUpperCase() + entry.type.slice(1);
+                csvContent += `"${formattedDate}","${type}","${safeDesc}","${parseFloat(entry.amount).toFixed(2)}","${safeRemarks}"\n`;
+            });
+
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+
+            const trackerSlug = tracker.name.toLowerCase().replace(/\s+/g, '_');
+            const filterSlug = label.toLowerCase().replace(/[\s→\-]/g, '_').replace(/[^a-z0-9_]/g, '');
+            const today = new Date().toISOString().split('T')[0];
+            link.setAttribute("download", `${trackerSlug}_${filterSlug}_${today}.csv`);
+
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Theme
+        let isDarkMode = true;
+
+        function applyTheme(dark) {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            const label = document.querySelector('#theme-label');
+
+            if (dark) {
+                body.classList.remove('light-mode');
+                if (icon) { icon.className = 'fa-solid fa-moon text-amber-400'; }
+                if (label) label.textContent = 'Dark Mode';
+            } else {
+                body.classList.add('light-mode');
+                if (icon) { icon.className = 'fa-solid fa-sun text-amber-400'; }
+                if (label) label.textContent = 'Light Mode';
+            }
+
+            // Update chart styling dynamically if instance exists
+            if (expenseChartInstance) {
+                const gridColor = dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+                const textColor = dark ? '#6b7280' : '#94a3b8';
+
+                expenseChartInstance.options.scales.x.grid.color = gridColor;
+                expenseChartInstance.options.scales.x.ticks.color = textColor;
+                expenseChartInstance.options.scales.y.grid.color = gridColor;
+                expenseChartInstance.options.scales.y.ticks.color = textColor;
+
+                if (expenseChartInstance.options.plugins.tooltip) {
+                    expenseChartInstance.options.plugins.tooltip.backgroundColor = dark ? 'rgba(15,23,42,0.9)' : 'rgba(255,255,255,0.95)';
+                    expenseChartInstance.options.plugins.tooltip.titleColor = dark ? '#f3f4f6' : '#0f172a';
+                    expenseChartInstance.options.plugins.tooltip.bodyColor = dark ? '#9ca3af' : '#475569';
+                    expenseChartInstance.options.plugins.tooltip.borderColor = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
+                }
+                expenseChartInstance.update();
+            }
+        }
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            applyTheme(isDarkMode);
+            localStorage.setItem('expenseFlowTheme', isDarkMode ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('expenseFlowTheme');
+            isDarkMode = saved !== 'light';
+            applyTheme(isDarkMode);
+        }
+
+        function renderAll() {
+            const isAll = currentTrackerId === 'all';
+            document.getElementById('current-tracker-name').textContent = isAll ? 'All Trackers' : trackers[currentTrackerId].name;
+
+            // Adjust New Entry / Delete buttons for 'all' mode
+            const newEntryBtn = document.querySelector('header button[onclick="showNewEntryModal()"]');
+            const deleteTrackerBtn = document.querySelector('button[onclick="deleteCurrentTracker()"]');
+
+            if (isAll) {
+                if (newEntryBtn) {
+                    newEntryBtn.classList.add('opacity-50', 'pointer-events-none');
+                    newEntryBtn.title = "Select a specific tracker to add entries";
+                }
+                if (deleteTrackerBtn) {
+                    deleteTrackerBtn.classList.add('opacity-50', 'pointer-events-none');
+                }
+            } else {
+                if (newEntryBtn) {
+                    newEntryBtn.classList.remove('opacity-50', 'pointer-events-none');
+                    newEntryBtn.title = "";
+                }
+                if (deleteTrackerBtn) {
+                    deleteTrackerBtn.classList.remove('opacity-50', 'pointer-events-none');
+                }
+            }
+
+            renderTrackers();
+            renderCards();
+            renderEntries();
+            renderFilterButtons();
+            renderCategoryFilterPills();
+            updateExpenseChart();
+        }
+
+        function changeGraphStyle(style) {
+            currentGraphStyle = style;
+            updateChartStyle();
+        }
+
+        function updateChartStyle() {
+            if (!expenseChartInstance) return;
+
+            const datasets = expenseChartInstance.data.datasets;
+            if (currentGraphStyle === 'bar') {
+                // Income
+                datasets[0].type = 'bar';
+                datasets[0].backgroundColor = 'rgba(59,130,246,0.25)';
+                datasets[0].borderColor = '#3b82f6';
+                datasets[0].borderWidth = 1.5;
+                datasets[0].borderRadius = 6;
+                datasets[0].pointRadius = 0;
+                datasets[0].fill = false;
+
+                // Expense
+                datasets[1].type = 'bar';
+                datasets[1].backgroundColor = 'rgba(248,113,113,0.25)';
+                datasets[1].borderColor = '#f87171';
+                datasets[1].borderWidth = 1.5;
+                datasets[1].borderRadius = 6;
+                datasets[1].pointRadius = 0;
+                datasets[1].fill = false;
+            } else if (currentGraphStyle === 'line') {
+                // Income
+                datasets[0].type = 'line';
+                datasets[0].borderColor = '#3b82f6';
+                datasets[0].backgroundColor = 'rgba(59,130,246,0.12)';
+                datasets[0].borderWidth = 2;
+                datasets[0].pointRadius = 3;
+                datasets[0].pointBackgroundColor = '#3b82f6';
+                datasets[0].tension = 0.4;
+                datasets[0].fill = true;
+
+                // Expense
+                datasets[1].type = 'line';
+                datasets[1].borderColor = '#f87171';
+                datasets[1].backgroundColor = 'rgba(248,113,113,0.12)';
+                datasets[1].borderWidth = 2;
+                datasets[1].pointRadius = 3;
+                datasets[1].pointBackgroundColor = '#f87171';
+                datasets[1].tension = 0.4;
+                datasets[1].fill = true;
+            } else {
+                // Mixed: Income as Bar, Expense as Line
+                // Income
+                datasets[0].type = 'bar';
+                datasets[0].backgroundColor = 'rgba(59,130,246,0.25)';
+                datasets[0].borderColor = '#3b82f6';
+                datasets[0].borderWidth = 1.5;
+                datasets[0].borderRadius = 6;
+                datasets[0].pointRadius = 0;
+                datasets[0].fill = false;
+
+                // Expense
+                datasets[1].type = 'line';
+                datasets[1].borderColor = '#f87171';
+                datasets[1].backgroundColor = 'rgba(248,113,113,0.12)';
+                datasets[1].borderWidth = 2;
+                datasets[1].pointRadius = 3;
+                datasets[1].pointBackgroundColor = '#f87171';
+                datasets[1].tension = 0.4;
+                datasets[1].fill = true;
+            }
+            expenseChartInstance.update();
+        }
+
+        function getEntryMonthKey(dateStr) {
+            const parts = dateStr.split('-');
+            if (parts.length < 2) return '';
+            const year = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1; // 0-based index for Date
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${monthNames[month]} ${year}`;
+        }
+
+        function updateExpenseChart() {
+            // Get entries for the active tracker or all trackers
+            let entries = [];
+            if (currentTrackerId === 'all') {
+                Object.keys(trackers).forEach(key => {
+                    entries = entries.concat(trackers[key].entries || []);
+                });
+            } else if (trackers[currentTrackerId]) {
+                entries = trackers[currentTrackerId].entries || [];
+            }
+
+            const chartData = getChartDataForRange(currentGraphRange, entries);
+
+            // Draw or update chart
+            const canvas = document.getElementById('expense-chart');
+            if (!canvas) return;
+
+            if (!expenseChartInstance) {
+                if (typeof Chart === 'undefined') return;
+                const isDark = !document.body.classList.contains('light-mode');
+                const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+                const textColor = isDark ? '#6b7280' : '#94a3b8';
+
+                expenseChartInstance = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: chartData.incomes,
+                                backgroundColor: 'rgba(59,130,246,0.25)',
+                                borderColor: '#3b82f6',
+                                borderWidth: 1.5,
+                                borderRadius: 6,
+                                order: 2
+                            },
+                            {
+                                label: 'Expense',
+                                data: chartData.expenses,
+                                type: 'line',
+                                borderColor: '#f87171',
+                                backgroundColor: 'rgba(248,113,113,0.12)',
+                                borderWidth: 2,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#f87171',
+                                tension: 0.4,
+                                fill: true,
+                                order: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: isDark ? 'rgba(15,23,42,0.9)' : 'rgba(255,255,255,0.95)',
+                                titleColor: isDark ? '#f3f4f6' : '#0f172a',
+                                bodyColor: isDark ? '#9ca3af' : '#475569',
+                                borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                                borderWidth: 1,
+                                padding: 10,
+                                callbacks: {
+                                    label: ctx => ` ₹${ctx.parsed.y.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } },
+                            y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 }, callback: v => '₹' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v) } }
+                        }
+                    }
+                });
+                updateChartStyle();
+            } else {
+                expenseChartInstance.data.labels = chartData.labels;
+                expenseChartInstance.data.datasets[0].data = chartData.incomes;
+                expenseChartInstance.data.datasets[1].data = chartData.expenses;
+                updateChartStyle();
+            }
+        }
+
+        function renderCategoryFilterPills() {
+            const container = document.getElementById('category-filter-pills');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Add "All" option
+            const allBtn = document.createElement('button');
+            allBtn.setAttribute('data-tracker-id', 'all');
+            allBtn.textContent = 'All';
+            allBtn.onclick = () => switchTracker('all');
+            container.appendChild(allBtn);
+
+            // Add dynamic trackers
+            Object.keys(trackers).forEach(key => {
+                const btn = document.createElement('button');
+                btn.setAttribute('data-tracker-id', key);
+                btn.textContent = trackers[key].name;
+                btn.onclick = () => switchTracker(key);
+                container.appendChild(btn);
+            });
+
+            // Set active states
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(btn => {
+                const btnId = btn.getAttribute('data-tracker-id');
+                if (btnId === currentTrackerId) {
+                    btn.className = "px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-200 bg-blue-600 text-white border border-blue-500/20 shadow-sm shadow-blue-500/20";
+                } else {
+                    btn.className = "px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-200 bg-transparent hover:bg-slate-800/40 text-gray-400 hover:text-white";
+                }
+            });
+        }
+
+        // Initialize everything
+        async function initializeApp() {
+            loadTheme();
+            loadData();
+            renderAll();
+
+            // One-time migration of old localStorage data to DB
+            await migrateLocalStorageToDb();
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                if (e.key === "Escape") {
+                    const modals = document.querySelectorAll('.fixed');
+                    for (let modal of modals) {
+                        if (!modal.classList.contains('hidden')) {
+                            modal.classList.add('hidden');
+                        }
+                    }
+                }
+
+                if (e.key === "n" && e.ctrlKey) {
+                    e.preventDefault();
+                    showNewEntryModal();
+                }
+            });
+
+            // Close modals when clicking backdrop
+            const modals = document.querySelectorAll('.fixed');
+            modals.forEach(modal => {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // Make functions global
+        window.showNewEntryModal = showNewEntryModal;
+        window.hideEntryModal = hideEntryModal;
+        window.setEntryType = setEntryType;
+        window.handleEntrySubmit = handleEntrySubmit;
+        window.editEntry = editEntry;
+        window.promptDeleteEntry = promptDeleteEntry;
+        window.hideDeleteModal = hideDeleteModal;
+        window.confirmDelete = confirmDelete;
+        window.switchTracker = switchTracker;
+        window.showNewTrackerModal = showNewTrackerModal;
+        window.hideNewTrackerModal = hideNewTrackerModal;
+        window.createNewTracker = createNewTracker;
+        window.deleteCurrentTracker = deleteCurrentTracker;
+
+        window.setFilter = setFilter;
+        window.resetFilter = resetFilter;
+        window.filterEntries = filterEntries;
+        window.toggleCustomRangePanel = toggleCustomRangePanel;
+        window.applyCustomRange = applyCustomRange;
+        window.clearCustomRange = clearCustomRange;
+        window.exportCSV = exportCSV;
+        function changeGraphRange(range) {
+            currentGraphRange = range;
+            updateExpenseChart();
+        }
+
+        window.toggleTheme = toggleTheme;
+        window.changeGraphStyle = changeGraphStyle;
+        window.changeGraphRange = changeGraphRange;
+
+        // Toggles mobile side drawer
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar && overlay) {
+                const isHidden = sidebar.classList.contains('-translate-x-full');
+                if (isHidden) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                }
+            }
+        }
+        window.toggleSidebar = toggleSidebar;
+
+        // Bridges mobile search input to desktop search handler
+        function filterEntriesMobile() {
+            const mobileInput = document.getElementById('search-input-mobile');
+            const desktopInput = document.getElementById('search-input');
+            if (mobileInput && desktopInput) {
+                desktopInput.value = mobileInput.value;
+                filterEntries();
+            }
+        }
+        window.filterEntriesMobile = filterEntriesMobile;
+
+        // Boot the app
+        window.onload = initializeApp;
+    </script>
+</body>
+
+</html>
