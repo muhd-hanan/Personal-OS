@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'p_tracker.wsgi.application'
 
 DATABASES = {
     "default": dj_database_url.config(
-        default=os.environ.get("postgresql://neondb_owner:npg_AJwWYK63DUBS@ep-odd-lab-aij0idic.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require")
+        default="postgresql://neondb_owner:npg_AJwWYK63DUBS@ep-odd-lab-aij0idic.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require"
     )
 }
 
