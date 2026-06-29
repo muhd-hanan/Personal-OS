@@ -224,7 +224,8 @@
         }
 
         body:not(.light-mode) input,
-        body:not(.light-mode) textarea {
+        body:not(.light-mode) textarea,
+        body:not(.light-mode) select {
             background: rgba(10, 15, 30, 0.4) !important;
             border: 1px solid rgba(255, 255, 255, 0.08) !important;
             color: #ffffff !important;
@@ -232,9 +233,20 @@
         }
 
         body:not(.light-mode) input:focus,
-        body:not(.light-mode) textarea:focus {
+        body:not(.light-mode) textarea:focus,
+        body:not(.light-mode) select:focus {
             border-color: #3b82f6 !important;
             box-shadow: 0 0 12px rgba(59, 130, 246, 0.25) !important;
+        }
+
+        body:not(.light-mode) select option {
+            background-color: #0c0f1d !important;
+            color: #ffffff !important;
+        }
+
+        body:not(.light-mode) .chart-container-bg {
+            background: rgba(2, 6, 23, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
         }
 
         body:not(.light-mode) .amount-positive {
@@ -298,7 +310,8 @@
         }
 
         body.light-mode input,
-        body.light-mode textarea {
+        body.light-mode textarea,
+        body.light-mode select {
             background: rgba(255, 255, 255, 0.55) !important;
             border: 1px solid rgba(0, 0, 0, 0.08) !important;
             color: #0f172a !important;
@@ -306,9 +319,20 @@
         }
 
         body.light-mode input:focus,
-        body.light-mode textarea:focus {
+        body.light-mode textarea:focus,
+        body.light-mode select:focus {
             border-color: #3b82f6 !important;
             box-shadow: 0 0 12px rgba(59, 130, 246, 0.18) !important;
+        }
+
+        body.light-mode select option {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .chart-container-bg {
+            background: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
         }
 
         body.light-mode .text-white {
@@ -667,7 +691,7 @@
 
                             <!-- Real Expense Chart (Chart.js) -->
                             <div
-                                class="h-48 w-full relative overflow-hidden mt-6 mb-2 rounded-2xl bg-slate-950/20 border border-slate-800/40 p-2">
+                                class="h-48 w-full relative overflow-hidden mt-6 mb-2 rounded-2xl chart-container-bg p-2">
                                 <canvas id="expense-chart" class="w-full h-full"></canvas>
                             </div>
                         </div>
