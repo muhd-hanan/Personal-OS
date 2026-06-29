@@ -697,7 +697,9 @@
     </div>
 
     <!-- Django JSON data context -->
-    <script id="reminders-data" type="application/json">{{ reminders_json|safe }}</script>
+    <script>
+        const remindersDataRaw = "{{ reminders_json|escapejs }}";
+    </script>
 
     <script>
         // Core states
@@ -1063,6 +1065,10 @@
 
                 const card = document.createElement('div');
                 card.className = `reminder-card bg-slate-900/50 border border-slate-800 rounded-3xl p-5 hover:border-slate-700 transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4`;
+                card.setAttribute('data-id', r.id);
+                card.setAttribute('data-date', r.date);
+                card.setAttribute('data-time', r.time);
+                card.setAttribute('data-is-recur', isRecur);
 
                 let recurrenceLabel = '';
                 let displayDateText = r.date;
@@ -1093,9 +1099,9 @@
                     
                     <div class="flex items-center gap-x-4 shrink-0 justify-between sm:justify-start w-full sm:w-auto">
                         <!-- Countdown Badge -->
-                        <span class="px-3 py-1.5 text-xs font-semibold border rounded-full select-none flex items-center gap-x-1.5 ${info.colorClass}">
+                        <span class="countdown-badge px-3 py-1.5 text-xs font-semibold border rounded-full select-none flex items-center gap-x-1.5 ${info.colorClass}">
                             <i class="${info.iconClass} text-[10px]"></i>
-                            <span>${info.text}</span>
+                            <span class="badge-text">${info.text}</span>
                         </span>
                         
                         <!-- Delete button -->
@@ -1126,9 +1132,47 @@
         function startCountdownTicker() {
             if (countdownTimer) clearInterval(countdownTimer);
             countdownTimer = setInterval(() => {
-                // Read reminder cards and update countdown badges
-                renderFeed();
+                // Update active countdown badges directly to prevent layout thrashing
+                updateCountdowns();
             }, 1000);
+        }
+
+        // Update active countdown badges in-place to optimize performance
+        function updateCountdowns() {
+            const cards = document.querySelectorAll('.reminder-card');
+            let needsReRender = false;
+            
+            cards.forEach(card => {
+                const id = card.getAttribute('data-id');
+                const dateStr = card.getAttribute('data-date');
+                const timeStr = card.getAttribute('data-time');
+                const isRecur = card.getAttribute('data-is-recur') === 'true';
+                
+                const info = getCountdownTextAndColor(dateStr, timeStr, isRecur);
+                
+                // If a future active reminder has just passed, trigger a full re-render
+                // to filter it out or move it to recurring if needed.
+                if (info.passed && !isRecur && activeFilter === 'active') {
+                    needsReRender = true;
+                }
+                
+                const badge = card.querySelector('.countdown-badge');
+                if (badge) {
+                    badge.className = `countdown-badge px-3 py-1.5 text-xs font-semibold border rounded-full select-none flex items-center gap-x-1.5 ${info.colorClass}`;
+                    const icon = badge.querySelector('i');
+                    if (icon) {
+                        icon.className = `${info.iconClass} text-[10px]`;
+                    }
+                    const textSpan = badge.querySelector('.badge-text');
+                    if (textSpan) {
+                        textSpan.innerText = info.text;
+                    }
+                }
+            });
+            
+            if (needsReRender) {
+                renderFeed();
+            }
         }
 
         function escapeHTML(str) {
@@ -1157,10 +1201,9 @@
             loadTheme();
 
             // Hydrate database context
-            const dataElem = document.getElementById('reminders-data');
-            if (dataElem) {
+            if (typeof remindersDataRaw !== 'undefined') {
                 try {
-                    reminders = JSON.parse(dataElem.textContent);
+                    reminders = JSON.parse(remindersDataRaw);
                 } catch (e) {
                     reminders = [];
                     console.error("Reminders hydration failed", e);
