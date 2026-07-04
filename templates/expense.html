@@ -1677,13 +1677,16 @@
                     renderAll();
                     showToast(isEdit ? 'Entry updated!' : 'Entry saved!', 'success');
                 } else {
-                    if (submitBtn) { submitBtn.textContent = originalText; submitBtn.disabled = false; }
                     showToast('Save failed: ' + result.message);
                 }
             } catch (err) {
                 console.error('Save entry error:', err);
-                if (submitBtn) { submitBtn.textContent = originalText; submitBtn.disabled = false; }
                 showToast('Failed to save entry: ' + err.message);
+            } finally {
+                if (submitBtn) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
             }
         }
 
@@ -1719,6 +1722,7 @@
             if (!entryToDelete) return;
 
             const deleteBtn = document.querySelector('#delete-confirm-modal button.bg-red-600');
+            const originalText = deleteBtn ? deleteBtn.textContent : 'Yes, Delete';
             if (deleteBtn) { deleteBtn.textContent = 'Deleting...'; deleteBtn.disabled = true; }
 
             try {
@@ -1747,13 +1751,16 @@
                     renderAll();
                     showToast('Entry deleted.', 'success');
                 } else {
-                    if (deleteBtn) { deleteBtn.textContent = 'Yes, Delete'; deleteBtn.disabled = false; }
                     showToast('Delete failed: ' + result.message);
                 }
             } catch (err) {
                 console.error('Delete error:', err);
-                if (deleteBtn) { deleteBtn.textContent = 'Yes, Delete'; deleteBtn.disabled = false; }
                 showToast('Failed to delete: ' + err.message);
+            } finally {
+                if (deleteBtn) {
+                    deleteBtn.textContent = originalText;
+                    deleteBtn.disabled = false;
+                }
             }
         }
 
