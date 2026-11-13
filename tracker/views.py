@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
-from .models import Tracker, Entry, Note, DiaryEntry, TodoTask, Reminder, HabitCategory, Habit, HabitProgress
+from .models import Tracker, Entry, Note, DiaryEntry, TodoTask, Reminder, HabitCategory, Habit, HabitProgress, MoneyCheckRecord
 
 def index(request):
 
@@ -228,6 +228,70 @@ def expense(request):
         'trackers_json': json.dumps(trackers_dict)
     }
     return render(request, 'expense.html', context)
+
+
+@ensure_csrf_cookie
+def money_check(request):
+    money_records = []
+    for r in MoneyCheckRecord.objects.all().order_by('-date', '-created_at'):
+        money_records.append({
+            'id': r.record_id,
+            'type': r.type,
+            'name': r.name,
+            'amount': float(r.amount),
+            'date': str(r.date),
+            'completed': r.completed,
+            'createdAt': r.created_at,
+            'updatedAt': r.updated_at
+        })
+    context = {
+        'money_records_json': json.dumps(money_records)
+    }
+    return render(request, 'money_check.html', context)
+
+
+
+@require_POST
+def save_money_records(request):
+    try:
+        data = json.loads(request.body)
+        if not isinstance(data, list):
+            data = data.get('records', [])
+
+        incoming_ids = [str(item['id']) for item in data]
+        MoneyCheckRecord.objects.exclude(record_id__in=incoming_ids).delete()
+
+        for item in data:
+            date_val = None
+            if item.get('date'):
+                try:
+                    date_val = datetime.strptime(str(item['date']), "%Y-%m-%d").date()
+                except Exception:
+                    date_val = date.today()
+            else:
+                date_val = date.today()
+
+            try:
+                amount_val = Decimal(str(item.get('amount', 0)))
+            except Exception:
+                amount_val = Decimal('0')
+
+            MoneyCheckRecord.objects.update_or_create(
+                record_id=str(item['id']),
+                defaults={
+                    'type': item.get('type', 'give'),
+                    'name': str(item.get('name', '')).strip(),
+                    'amount': amount_val,
+                    'date': date_val,
+                    'completed': bool(item.get('completed', False)),
+                    'created_at': int(item.get('createdAt', int(time.time() * 1000))),
+                    'updated_at': int(item.get('updatedAt', int(time.time() * 1000))),
+                }
+            )
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
 
 @require_POST
 def save_data(request):

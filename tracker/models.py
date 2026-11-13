@@ -103,3 +103,18 @@ class HabitProgress(models.Model):
 
     def __str__(self):
         return f"{self.habit_id} - {self.date}"
+
+
+class MoneyCheckRecord(models.Model):
+    record_id = models.CharField(max_length=100, unique=True, primary_key=True)
+    type = models.CharField(max_length=10, choices=[('give', 'Money Given'), ('get', 'Money Received')])
+    name = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    date = models.DateField()
+    completed = models.BooleanField(default=False)
+    created_at = models.BigIntegerField(default=0)
+    updated_at = models.BigIntegerField(default=0)
+
+    def __str__(self):
+        return f"[{self.type.upper()}] {self.name} - {self.amount} ({'Settled' if self.completed else 'Pending'})"
+
